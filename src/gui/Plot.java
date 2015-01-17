@@ -131,19 +131,27 @@ public class Plot extends AnimatedPanel {
         return getRandomScores(0);
     }
 
-    public static List<Double> getRandomScores(int start) {
+    public static double testFunction(double value) {
+        return Math.exp(-value * value);
+    }
+
+    public static List<Double> getRandomScores(double start) {
         List<Double> scores = new ArrayList<>();
         int maxDataPoints = 400;
         for (int i = 0; i < maxDataPoints; i++) {
-            scores.add(Math.sin((start + i) / 50d));
+            scores.add(testFunction((start - i) / 50d));
         }
         return scores;
     }
 
-    private int prevStart = 0;
+    private double prevStart = 0;
+    private double prevTime = 0;
+
 
     @Override
     void doAnimationTick(long timeElapsed) {
-        setScores(getRandomScores(prevStart++));
+        setScores(getRandomScores(prevStart));
+        prevStart += (timeElapsed - prevTime) / 20d;
+        prevTime = timeElapsed;
     }
 }

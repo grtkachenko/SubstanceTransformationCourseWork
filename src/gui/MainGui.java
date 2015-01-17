@@ -1,12 +1,15 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -20,6 +23,7 @@ public class MainGui extends JFrame {
     private JComboBox dimensionSelector;
     private JPanel paramsPanel;
     private JPanel graphsLayout;
+    private JSlider speedSlider;
     private boolean is1DimensionalState;
     private List<AnimatedPanel> currentAnimatedPanels = new ArrayList<>();
 
@@ -39,6 +43,7 @@ public class MainGui extends JFrame {
                 for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
                     animatedPanel.animate();
                 }
+                setStartButtonEnabled(false);
             }
         });
         stopButton.addActionListener(new ActionListener() {
@@ -46,6 +51,21 @@ public class MainGui extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
                     animatedPanel.stopAnimation();
+                }
+                setStartButtonEnabled(true);
+            }
+        });
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(0, new JLabel("-4"));
+        labelTable.put(speedSlider.getMaximum() / 2 - 100, new JLabel("0"));
+        labelTable.put(speedSlider.getMaximum() / 2, new JLabel("1"));
+        labelTable.put(speedSlider.getMaximum(), new JLabel("6"));
+        speedSlider.setLabelTable(labelTable);
+        speedSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                    animatedPanel.setAnimationSpeed((speedSlider.getValue() - 400) / 100d);
                 }
             }
         });
@@ -61,10 +81,18 @@ public class MainGui extends JFrame {
         setSize(new Dimension(500, 500));
     }
 
+    private void setStartButtonEnabled(boolean enabled) {
+        startButton.setEnabled(enabled);
+        stopButton.setEnabled(!enabled);
+    }
+
     private void setUIState(boolean is1Dimensional) {
         for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
             animatedPanel.stopAnimation();
+
         }
+        speedSlider.setValue(speedSlider.getMaximum() / 2);
+        setStartButtonEnabled(true);
 
         graphsLayout.removeAll();
         currentAnimatedPanels.clear();
@@ -157,6 +185,19 @@ public class MainGui extends JFrame {
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(paramsPanel, gbc);
+        speedSlider = new JSlider();
+        speedSlider.setMaximum(1000);
+        speedSlider.setPaintLabels(true);
+        speedSlider.setPaintTicks(true);
+        speedSlider.setSnapToTicks(true);
+        speedSlider.setValue(500);
+        speedSlider.setValueIsAdjusting(true);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(speedSlider, gbc);
         graphsLayout = new JPanel();
         graphsLayout.setLayout(new GridBagLayout());
         rootPanel.add(graphsLayout, BorderLayout.CENTER);
