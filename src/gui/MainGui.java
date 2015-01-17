@@ -1,22 +1,54 @@
+package gui;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
  * User: gtkachenko
  * Date: 17/01/15
- * Time: 19:31
  */
 public class MainGui extends JFrame {
     private JPanel rootPanel;
     private JButton startButton;
     private JButton stopButton;
-    private JComboBox comboBox1;
+    private JComboBox dimensionSelector;
     private JPanel paramsPanel;
     private JPanel graphsLayout;
+    private boolean is1DimensionalState;
+    private List<AnimatedPanel> currentAnimatedPanels = new ArrayList<>();
 
     public MainGui() throws HeadlessException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        dimensionSelector.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    setUIState(!is1DimensionalState);
+                }
+            }
+        });
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                    animatedPanel.animate();
+                }
+            }
+        });
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                    animatedPanel.stopAnimation();
+                }
+            }
+        });
         setContentPane(rootPanel);
         for (int i = 0; i < 3; i++) {
             JPanel panel = new JPanel();
@@ -25,16 +57,36 @@ public class MainGui extends JFrame {
             panel.add(new JTextField(10));
             addComponent(i, paramsPanel, panel);
         }
-        GradientTest[] gradientTests = new GradientTest[3];
-        for (int i = 0; i < 3; i++) {
-            gradientTests[i] = new GradientTest();
-            addComponent(i, graphsLayout, gradientTests[i]);
-        }
-        for (int i = 0; i < 3; i++) {
-            gradientTests[i].animate();
+        setUIState(true);
+        setSize(new Dimension(500, 500));
+    }
+
+    private void setUIState(boolean is1Dimensional) {
+        for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+            animatedPanel.stopAnimation();
         }
 
-        setSize(new Dimension(500, 500));
+        graphsLayout.removeAll();
+        currentAnimatedPanels.clear();
+        graphsLayout.revalidate();
+        graphsLayout.repaint();
+        is1DimensionalState = is1Dimensional;
+        if (!is1DimensionalState) {
+            for (int i = 0; i < 3; i++) {
+                currentAnimatedPanels.add(new GradientTest());
+            }
+        } else {
+            for (int j = 0; j < 3; j++) {
+                currentAnimatedPanels.add(new Plot(Plot.getRandomScores()));
+            }
+        }
+        int it = 0;
+        for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+            addComponent(it++, graphsLayout, animatedPanel);
+        }
+
+        invalidate();
+        graphsLayout.repaint();
     }
 
     private void addComponent(int row, JPanel panel, JComponent component) {
@@ -87,17 +139,17 @@ public class MainGui extends JFrame {
         stopButton = new JButton();
         stopButton.setText("Stop");
         panel2.add(stopButton);
-        comboBox1 = new JComboBox();
+        dimensionSelector = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("1-dimensional");
         defaultComboBoxModel1.addElement("2-dimensional");
-        comboBox1.setModel(defaultComboBoxModel1);
+        dimensionSelector.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(comboBox1, gbc);
+        panel1.add(dimensionSelector, gbc);
         paramsPanel = new JPanel();
         paramsPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
