@@ -1,9 +1,14 @@
 package course_work;
 
+import course_work.algo.CachedComputationMethod;
+import course_work.algo.ComputationMethod;
+import course_work.algo.EulerExplicitForwardMethod;
+import course_work.algo.Settings;
 import course_work.gui.DoubleDimensionDataSource;
 import course_work.gui.GUIHelper;
 import course_work.gui.SingleDimensionDataSource;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -13,48 +18,28 @@ import java.util.Random;
 public class Main {
 
     // TODO: add params
-    public static SingleDimensionDataSource[] getSingleDimensionDataSources() {
+    public static SingleDimensionDataSource[] getSingleDimensionDataSources(Settings settings) {
+        ComputationMethod simpleComputationMethod = new EulerExplicitForwardMethod();
+        simpleComputationMethod.init(settings);
+        final CachedComputationMethod computationMethod = new CachedComputationMethod(simpleComputationMethod);
+
         SingleDimensionDataSource[] singleDimensionDataSources = {
                 new SingleDimensionDataSource() {
-                    private double prevStart = 0;
-                    private double prevTime = 0;
-
-                    public double testFunction(double value) {
-                        return Math.exp(-value * value);
-                    }
-
                     @Override
                     public double[] getValues(long timeElapsed) {
-                        final int valuesCnt = 400;
-                        double[] values = new double[valuesCnt];
-                        for (int i = 0; i < valuesCnt; i++) {
-                            values[i] = testFunction((prevStart - i) / 50d);
-                        }
-
-                        prevStart += (timeElapsed - prevTime) / 20d;
-                        prevTime = timeElapsed;
-                        return values;
+                        return computationMethod.temperatures(timeElapsed);
                     }
                 },
                 new SingleDimensionDataSource() {
-                    private double prevStart = 0;
-                    private double prevTime = 0;
-
-                    public double testFunction(double value) {
-                        return Math.exp(-value * value);
-                    }
-
                     @Override
                     public double[] getValues(long timeElapsed) {
-                        final int valuesCnt = 400;
-                        double[] values = new double[valuesCnt];
-                        for (int i = 0; i < valuesCnt; i++) {
-                            values[i] = testFunction((prevStart - i) / 50d);
-                        }
-
-                        prevStart += (timeElapsed - prevTime) / 20d;
-                        prevTime = timeElapsed;
-                        return values;
+                        return computationMethod.concentrations(timeElapsed);
+                    }
+                },
+                new SingleDimensionDataSource() {
+                    @Override
+                    public double[] getValues(long timeElapsed) {
+                        return computationMethod.reactionSpeed(timeElapsed);
                     }
                 }
         };

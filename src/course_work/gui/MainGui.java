@@ -1,6 +1,7 @@
 package course_work.gui;
 
 import course_work.Main;
+import course_work.algo.Settings;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -32,7 +33,8 @@ public class MainGui extends JFrame {
     private DoubleDimensionDataSource[] doubleDimensionDataSources;
 
     public MainGui() throws HeadlessException {
-        this.singleDimensionDataSources = Main.getSingleDimensionDataSources();
+        Settings settings = new Settings();
+        this.singleDimensionDataSources = Main.getSingleDimensionDataSources(settings);
         this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dimensionSelector.addItemListener(new ItemListener() {
