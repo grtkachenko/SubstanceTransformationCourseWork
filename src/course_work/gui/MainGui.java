@@ -1,4 +1,6 @@
-package gui;
+package course_work.gui;
+
+import course_work.Main;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -26,8 +28,12 @@ public class MainGui extends JFrame {
     private JSlider speedSlider;
     private boolean is1DimensionalState;
     private List<AnimatedPanel> currentAnimatedPanels = new ArrayList<>();
+    private SingleDimensionDataSource[] singleDimensionDataSources;
+    private DoubleDimensionDataSource[] doubleDimensionDataSources;
 
     public MainGui() throws HeadlessException {
+        this.singleDimensionDataSources = Main.getSingleDimensionDataSources();
+        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dimensionSelector.addItemListener(new ItemListener() {
             @Override
@@ -100,12 +106,12 @@ public class MainGui extends JFrame {
         graphsLayout.repaint();
         is1DimensionalState = is1Dimensional;
         if (!is1DimensionalState) {
-            for (int i = 0; i < 3; i++) {
-                currentAnimatedPanels.add(new GradientTest());
+            for (DoubleDimensionDataSource doubleDimensionDataSource : doubleDimensionDataSources) {
+                currentAnimatedPanels.add(new DoubleDimensionPanel(doubleDimensionDataSource));
             }
         } else {
-            for (int j = 0; j < 3; j++) {
-                currentAnimatedPanels.add(new Plot(Plot.getRandomScores()));
+            for (SingleDimensionDataSource singleDimensionDataSource : singleDimensionDataSources) {
+                currentAnimatedPanels.add(new Plot(singleDimensionDataSource));
             }
         }
         int it = 0;

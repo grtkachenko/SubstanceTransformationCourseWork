@@ -1,4 +1,4 @@
-package gui;
+package course_work.gui;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

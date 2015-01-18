@@ -1,6 +1,4 @@
-package gui;
-
-import javax.swing.*;
+package course_work.gui;
 
 /**
  * User: gtkachenko
@@ -8,7 +6,7 @@ import javax.swing.*;
  */
 public class GUIHelper {
     private static GUIHelper ourInstance = new GUIHelper();
-    private JFrame frame;
+    private MainGui frame;
     public static GUIHelper getInstance() {
         return ourInstance;
     }

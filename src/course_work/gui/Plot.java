@@ -1,4 +1,4 @@
-package gui;
+package course_work.gui;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,11 +15,13 @@ public class Plot extends AnimatedPanel {
     private int pointWidth = 4;
     private int numberYDivisions = 10;
     private List<Double> scores;
- 
-    public Plot(List<Double> scores) {
-        this.scores = scores;
+    private SingleDimensionDataSource singleDimensionDataSource;
+
+    public Plot(SingleDimensionDataSource singleDimensionDataSource) {
+        this.singleDimensionDataSource = singleDimensionDataSource;
+        setScores(singleDimensionDataSource.getValues(0));
     }
- 
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -127,31 +129,16 @@ public class Plot extends AnimatedPanel {
         this.repaint();
     }
 
-    public static List<Double> getRandomScores() {
-        return getRandomScores(0);
-    }
-
-    public static double testFunction(double value) {
-        return Math.exp(-value * value);
-    }
-
-    public static List<Double> getRandomScores(double start) {
-        List<Double> scores = new ArrayList<>();
-        int maxDataPoints = 400;
-        for (int i = 0; i < maxDataPoints; i++) {
-            scores.add(testFunction((start - i) / 50d));
+    public void setScores(double[] scores) {
+        List<Double> values = new ArrayList<>();
+        for (double cur : scores) {
+            values.add(cur);
         }
-        return scores;
+        setScores(values);
     }
-
-    private double prevStart = 0;
-    private double prevTime = 0;
-
 
     @Override
     void doAnimationTick(long timeElapsed) {
-        setScores(getRandomScores(prevStart));
-        prevStart += (timeElapsed - prevTime) / 20d;
-        prevTime = timeElapsed;
+        setScores(singleDimensionDataSource.getValues(timeElapsed));
     }
 }
