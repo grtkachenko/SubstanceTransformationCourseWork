@@ -1,14 +1,11 @@
 package course_work.algo;
 
-import course_work.gui.SingleDimensionDataSource;
-
 import java.util.Arrays;
-import java.util.Set;
 
 /**
  * Created by antonkov on 1/18/2015.
  */
-public class EulerExplicitForwardMethod implements ComputationMethod {
+public class EulerExplicitForwardMethod implements ComputationMethod<double[]> {
     double[] T, X, W;
     Settings settings;
 
@@ -21,14 +18,14 @@ public class EulerExplicitForwardMethod implements ComputationMethod {
     }
 
     public double[] initialT() {
-        double[] t = new double[settings.space_steps];
+        double[] t = new double[settings.l_steps];
         Arrays.fill(t, settings.T0);
         t[0] = settings.Tm;
         return t;
     }
 
     public double[] initialX() {
-        double[] x = new double[settings.space_steps];
+        double[] x = new double[settings.l_steps];
         Arrays.fill(x, settings.xRight);
         x[0] = settings.xLeft;
         return x;
@@ -39,7 +36,7 @@ public class EulerExplicitForwardMethod implements ComputationMethod {
         this.settings = settings;
         T = initialT();
         X = initialX();
-        W = new double[settings.space_steps];
+        W = new double[settings.l_steps];
     }
 
     @Override
@@ -56,7 +53,7 @@ public class EulerExplicitForwardMethod implements ComputationMethod {
             newX[i] = X[i] + s.dt * (s.D * (X[i + 1] - 2 * X[i] + X[i - 1]) / s.dz / s.dz + w(X[i], T[i]));
             newT[i] = T[i] + s.dt * (s.kappa * (T[i + 1] - 2 * T[i] + T[i - 1]) / s.dz / s.dz - s.Q / s.C * w(X[i], T[i]));
         }
-        newX[X.length - 1] = s.xRight; newT[X.length - 1] = s.T0;
+        newX[X.length - 1] = s.xRight; newT[T.length - 1] = s.T0;
         X = newX; T = newT;
     }
 

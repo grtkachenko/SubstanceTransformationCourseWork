@@ -35,7 +35,7 @@ public class MainGui extends JFrame {
     public MainGui() throws HeadlessException {
         Settings settings = new Settings();
         this.singleDimensionDataSources = Main.getSingleDimensionDataSources(settings);
-        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources();
+        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(settings);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dimensionSelector.addItemListener(new ItemListener() {
             @Override

@@ -7,7 +7,7 @@ public class Settings {
     double R = 8.314;
     double E = 8e+4;
     double K = 1.6e+6;
-    double alpha = 1.0 / 6;
+    double alpha = 1;
     double Q = 7e+5;
     double C = 1980.0;
     double rho = 830.0;
@@ -21,8 +21,11 @@ public class Settings {
 
     double dt = 1.0;
     double dz = 0.001;
+    double dy = 0.001;
     double maxTime = 2000;
     double l = 0.05;
+    double h = 0.02;
     int time_steps = (int) (maxTime / dt);
-    int space_steps = (int) (l / dz);
+    int l_steps = (int) (l / dz);
+    int h_steps = (int) (h / dy);
 }
