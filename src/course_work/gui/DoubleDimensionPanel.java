@@ -1,6 +1,9 @@
 package course_work.gui;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.Raster;
 
 /**
  * User: gtkachenko
@@ -21,23 +24,35 @@ public class DoubleDimensionPanel extends AnimatedPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        double maxValue = 0;
 
-        for (int i = 0; i < currentMatrix.length; i++) {
-            for (double cur : currentMatrix[i]) {
+        double maxValue = 0;
+        for (double[] row : currentMatrix) {
+            for (double cur : row) {
                 maxValue = Math.max(maxValue, cur);
             }
         }
         int width = getWidth() - padding, height = getHeight() - padding;
         int matrixWidth = currentMatrix.length, matrixHeight = currentMatrix[0].length;
         int blockWidth = width / matrixWidth, blockHeight = height / matrixHeight;
+        for (double[] row : currentMatrix) {
+            for (int i = 0; i < row.length; i++) {
+                row[i] /= maxValue;
+                row[i] = Math.min(1f, Math.max(0f, row[i]));
+            }
+        }
+        BufferedImage img = new BufferedImage(matrixWidth, matrixHeight, BufferedImage.TYPE_INT_ARGB);
 
         for (int i = 0; i < matrixWidth; i++) {
             for (int j = 0; j < matrixHeight; j++) {
-                g2.setPaint(new Color(1f, 0f, 0f, Math.min(1f, Math.max(0, (float) (currentMatrix[i][j] / maxValue)))));
-                g2.fillRect(i * blockWidth, j * blockHeight, blockWidth, blockHeight);
+                img.setRGB(i, j, new Color(1f, 0f, 0f, (float)currentMatrix[i][j]).getRGB());
             }
         }
+        g2.drawImage(img, 0, 0, width, height, new ImageObserver() {
+            @Override
+            public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+                return false;
+            }
+        });
         g2.setPaint(Color.black);
     }
 
