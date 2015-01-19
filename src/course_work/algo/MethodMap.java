@@ -13,7 +13,7 @@ public class MethodMap {
 
     static {
         methods1D.put(0, new EulerExplicitForwardMethod());
-        methods1D.put(1, new EulerExplicitForwardMethod());
+        methods1D.put(1, new EulerImplicitForwardMethod());
         methods1D.put(2, new EulerExplicitForwardMethod());
         methods1D.put(3, new EulerExplicitForwardMethod());
 

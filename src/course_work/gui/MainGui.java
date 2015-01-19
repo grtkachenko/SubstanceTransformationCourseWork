@@ -81,6 +81,7 @@ public class MainGui extends JFrame {
         setStartButtonEnabled(true);
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(0, new JLabel("-4"));
+        speedSlider.setValue(420);
         labelTable.put(speedSlider.getMaximum() / 2 - 100, new JLabel("0"));
         labelTable.put(speedSlider.getMaximum() / 2, new JLabel("1"));
         labelTable.put(speedSlider.getMaximum(), new JLabel("6"));
