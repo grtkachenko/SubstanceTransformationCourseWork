@@ -49,7 +49,7 @@ public class MainGui extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
-                    animatedPanel.animate();
+                    animatedPanel.animate((speedSlider.getValue() - 400) / 100d);
                 }
                 setStartButtonEnabled(false);
             }

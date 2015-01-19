@@ -20,6 +20,10 @@ public abstract class AnimatedPanel extends JPanel {
     private boolean isRunning = false;
 
     public void animate() {
+        animate(1);
+    }
+
+    public void animate(double targetSpeed) {
         if (isRunning) {
             return;
         }
@@ -28,8 +32,8 @@ public abstract class AnimatedPanel extends JPanel {
         timer = new Timer(15, null);
         start = System.currentTimeMillis();
         totalElapsedTime = 0;
-        speed = 1;
-        setAnimationSpeed(1);
+        speed = targetSpeed;
+        setAnimationSpeed(targetSpeed);
         timer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -45,9 +49,11 @@ public abstract class AnimatedPanel extends JPanel {
                 }
                 final long elapsed = totalElapsedTime + (long) ((now - start) * speed);
                 if (elapsed < 0) {
-                    stopAnimation();
+                    totalElapsedTime = 0;
+                    doAnimationTick(0);
+                } else {
+                    doAnimationTick(elapsed);
                 }
-                doAnimationTick(elapsed);
             }
         });
         timer.start();

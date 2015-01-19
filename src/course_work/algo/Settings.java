@@ -7,7 +7,7 @@ public class Settings {
     double R = 8.314;
     double E = 8e+4;
     double K = 1.6e+6;
-    double alpha = 1.0 / 6;
+    double alpha = 1.0;
     double Q = 7e+5;
     double C = 1980.0;
     double rho = 830.0;
