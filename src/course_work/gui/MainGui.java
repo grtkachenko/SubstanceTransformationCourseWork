@@ -14,13 +14,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.geom.Arc2D;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -54,7 +52,7 @@ public class MainGui extends JFrame {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    setUIState(!is1DimensionalState);
+                    refreshGraphsPanel(!is1DimensionalState);
                 }
             }
         });
@@ -70,6 +68,7 @@ public class MainGui extends JFrame {
                 stopAnimations();
             }
         });
+        setStartButtonEnabled(true);
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(0, new JLabel("-4"));
         labelTable.put(speedSlider.getMaximum() / 2 - 100, new JLabel("0"));
@@ -86,7 +85,7 @@ public class MainGui extends JFrame {
         });
         setContentPane(rootPanel);
         addParamFields();
-        setUIState(true);
+        refreshGraphsPanel(true);
         setSize(new Dimension(500, 500));
     }
 
@@ -117,7 +116,7 @@ public class MainGui extends JFrame {
             needToUpdateSources = false;
             MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings));
             MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings));
-            setUIState(is1DimensionalState);
+            refreshGraphsPanel(is1DimensionalState);
         }
     }
 
@@ -163,7 +162,7 @@ public class MainGui extends JFrame {
                         }
                     });
                     panel.add(comp);
-                    addComponent(it++, paramsPanel, panel);
+                    addComponentToPanel(it++, paramsPanel, panel);
                 }
             }
         }
@@ -193,7 +192,7 @@ public class MainGui extends JFrame {
         stopButton.setEnabled(!enabled);
     }
 
-    private void setUIState(boolean is1Dimensional) {
+    private void refreshGraphsPanel(boolean is1Dimensional) {
         stopAnimations();
         graphsLayout.removeAll();
         currentAnimatedPanels.clear();
@@ -211,14 +210,14 @@ public class MainGui extends JFrame {
         }
         int it = 0;
         for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
-            addComponent(it++, graphsLayout, animatedPanel);
+            addComponentToPanel(it++, graphsLayout, animatedPanel);
         }
 
         invalidate();
         graphsLayout.repaint();
     }
 
-    private void addComponent(int row, JPanel panel, JComponent component) {
+    private void addComponentToPanel(int row, JPanel panel, JComponent component) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = row;
