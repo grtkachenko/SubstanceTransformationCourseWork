@@ -51,10 +51,10 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
                 d[i] = Utils.w(X[i], T[i], s) * s.dt + X[i];
                 b[i] = 1 + 2 * s.D * s.dt / s.dz / s.dz;
             }
-            c[0] = 0;
+            a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
-            d[0] = X[0];
-            d[n - 1] = X[n - 1];
+            d[0] = s.xLeft;
+            d[n - 1] = s.xRight;
             newX = Utils.solveTridiagonal(a, b, c, d);
         }
         {
@@ -64,20 +64,16 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
                 a[i] = c[i] = -s.kappa * s.dt / s.dz / s.dz;
-                d[i] = -s.Q / s.C * Utils.w(X[i], T[i], s) * s.dt + X[i];
+                d[i] = -s.Q / s.C * Utils.w(X[i], T[i], s) * s.dt + T[i];
                 b[i] = 1 + 2 * s.kappa * s.dt / s.dz / s.dz;
             }
-            c[0] = 0;
+            a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
-            d[0] = X[0];
-            d[n - 1] = X[n - 1];
+            d[0] = s.Tm;
+            d[n - 1] = s.T0;
             newT = Utils.solveTridiagonal(a, b, c, d);
         }
         X = newX; T = newT;
-        X[0] = s.xLeft;
-        X[n - 1] = s.xRight;
-        T[0] = s.Tm;
-        T[n - 1] = s.T0;
     }
 
     @Override
