@@ -71,10 +71,10 @@ public class Settings implements Cloneable {
     int l_steps = 50;
     @Modifiable
     int h_steps = 20;
-    double dt = maxTime / time_steps;
-    double dz = l / l_steps;
-    double dy = h / h_steps;
 
+    double dt;
+    double dz;
+    double dy;
 
     @Override
     protected Object clone() throws CloneNotSupportedException {

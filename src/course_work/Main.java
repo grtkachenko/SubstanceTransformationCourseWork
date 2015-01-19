@@ -12,9 +12,7 @@ import course_work.gui.SingleDimensionDataSource;
 public class Main {
 
     public static SingleDimensionDataSource[] getSingleDimensionDataSources(Settings settings, int methodId) {
-        // TODO: use MethodMap.methodMap.get(methodId)
-
-        ComputationMethod<double[]> simpleComputationMethod = new EulerExplicitForwardMethod();
+        ComputationMethod<double[]> simpleComputationMethod = MethodMap.methods1D.get(methodId);
         simpleComputationMethod.init(settings);
         final CachedComputationMethod<double[]> computationMethod = new CachedComputationMethod(simpleComputationMethod);
 
@@ -42,9 +40,7 @@ public class Main {
     }
 
     public static DoubleDimensionDataSource[] getDoubleDimensionDataSources(Settings settings, int methodId) {
-        // TODO: use MethodMap.methodMap.get(methodId)
-
-        ComputationMethod<double[][]> simpleComputationMethod = new EulerExplicitForwardMethod2D();
+        ComputationMethod<double[][]> simpleComputationMethod = MethodMap.methods2D.get(methodId);
         simpleComputationMethod.init(settings);
         final CachedComputationMethod<double[][]> computationMethod = new CachedComputationMethod(simpleComputationMethod);
         DoubleDimensionDataSource[] doubleDimensionDataSources = {

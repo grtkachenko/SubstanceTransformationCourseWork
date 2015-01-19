@@ -8,9 +8,18 @@ import java.util.Map;
  * Date: 19/01/15
  */
 public class MethodMap {
-    public static Map<Integer, Class> methodMap = new HashMap<>();
+    public static Map<Integer, ComputationMethod<double[]>> methods1D = new HashMap<>();
+    public static Map<Integer, ComputationMethod<double[][]>> methods2D = new HashMap<>();
 
     static {
-        methodMap.put(0, EulerExplicitForwardMethod.class);
+        methods1D.put(0, new EulerExplicitForwardMethod());
+        methods1D.put(1, new EulerExplicitForwardMethod());
+        methods1D.put(2, new EulerExplicitForwardMethod());
+        methods1D.put(3, new EulerExplicitForwardMethod());
+
+        methods2D.put(0, new EulerExplicitForwardMethod2D());
+        methods2D.put(1, new EulerExplicitForwardMethod2D());
+        methods2D.put(2, new EulerExplicitForwardMethod2D());
+        methods2D.put(3, new EulerExplicitForwardMethod2D());
     }
 }

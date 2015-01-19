@@ -61,7 +61,7 @@ public class MainGui extends JFrame {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 stopAnimations();
-                updateSources();
+                updateSources(true);
                 refreshGraphsPanel(is1DimensionalState);
             }
         });
@@ -121,13 +121,17 @@ public class MainGui extends JFrame {
 
     }
 
-    private void updateSources() {
-        if (needToUpdateSources) {
+    private void updateSources(boolean force) {
+        if (needToUpdateSources || force) {
             needToUpdateSources = false;
             MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex());
             MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex());
             refreshGraphsPanel(is1DimensionalState);
         }
+    }
+
+    private void updateSources() {
+        updateSources(false);
     }
 
     private void addParamFields() {

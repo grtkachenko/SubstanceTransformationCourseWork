@@ -71,7 +71,7 @@
               <paintLabels value="true"/>
               <paintTicks value="true"/>
               <snapToTicks value="true"/>
-              <value value="100"/>
+              <value value="500"/>
               <valueIsAdjusting value="true"/>
             </properties>
           </component>
