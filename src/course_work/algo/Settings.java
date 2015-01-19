@@ -3,7 +3,7 @@ package course_work.algo;
 /**
  * Created by antonkov on 1/18/2015.
  */
-public class Settingsg {
+public class Settings {
 
     public Settings() {
         initParams();
