@@ -5,11 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by antonkov on 1/18/2015.
  */
-public class CachedComputationMethod {
-    ComputationMethod computationMethod;
-    ArrayList<double[]> Ts;
-    ArrayList<double[]> Xs;
-    ArrayList<double[]> Ws;
+public class CachedComputationMethod<T> {
+    ComputationMethod<T> computationMethod;
+    ArrayList<T> Ts;
+    ArrayList<T> Xs;
+    ArrayList<T> Ws;
 
     public CachedComputationMethod(ComputationMethod computationMethod) {
         this.computationMethod = computationMethod;
@@ -29,17 +29,17 @@ public class CachedComputationMethod {
         return Math.max(0, idx);
     }
 
-    public double[] temperatures(long timeElapsed) {
+    public T temperatures(long timeElapsed) {
         int idx = getIteration(timeElapsed);
         return Ts.get(idx);
     }
 
-    public double[] concentrations(long timeElapsed) {
+    public T concentrations(long timeElapsed) {
         int idx = getIteration(timeElapsed);
         return Xs.get(idx);
     }
 
-    public double[] reactionSpeed(long timeElapsed) {
+    public T reactionSpeed(long timeElapsed) {
         int idx = getIteration(timeElapsed);
         return Ws.get(idx);
     }

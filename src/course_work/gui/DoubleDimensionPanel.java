@@ -7,7 +7,7 @@ import java.awt.*;
  * Date: 17/01/15
  */
 public class DoubleDimensionPanel extends AnimatedPanel {
-g    private double[][] currentMatrix;
+    private double[][] currentMatrix;
     private DoubleDimensionDataSource doubleDimensionDataSource;
 
     public DoubleDimensionPanel(DoubleDimensionDataSource doubleDimensionDataSource) {

@@ -21,8 +21,11 @@ public class Settings {
 
     double dt = 1.0;
     double dz = 0.001;
+    double dy = 0.001;
     double maxTime = 2000;
     double l = 0.05;
+    double h = 0.02;
     int time_steps = (int) (maxTime / dt);
-    int space_steps = (int) (l / dz);
+    int l_steps = (int) (l / dz);
+    int h_steps = (int) (h / dy);
 }
