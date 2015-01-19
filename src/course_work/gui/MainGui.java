@@ -166,7 +166,7 @@ public class MainGui extends JFrame {
                         }
 
                         private void doUpdate() {
-                            if (callSetter(settings, field.getName(), comp.getText())) {
+                            if (callSetter(settings, field.getName(), comp.getText(), field.getType())) {
                                 needToUpdateSources = true;
                             }
                         }
@@ -178,14 +178,18 @@ public class MainGui extends JFrame {
         }
     }
 
-    private boolean callSetter(Object target, String valueName, String value) {
+    private boolean callSetter(Object target, String valueName, String value, Class classValue) {
         try {
             if (value == null || value.isEmpty()) {
                 return false;
             }
             valueName = Character.toUpperCase(valueName.charAt(0)) + valueName.substring(1);
-            Method method = target.getClass().getDeclaredMethod("set" + valueName, double.class);
-            method.invoke(target, Double.parseDouble(value));
+            Method method = target.getClass().getDeclaredMethod("set" + valueName, classValue);
+            if (classValue == double.class) {
+                method.invoke(target, Double.parseDouble(value));
+            } else {
+                method.invoke(target, Integer.parseInt(value));
+            }
             return true;
         } catch (NoSuchMethodException e1) {
             e1.printStackTrace();

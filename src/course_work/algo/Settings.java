@@ -30,14 +30,16 @@ public class Settings implements Cloneable {
         D = d;
         this.xLeft = xLeft;
         this.xRight = xRight;
-        this.dt = dt;
-        this.dz = dz;
-        this.dy = dy;
         this.maxTime = maxTime;
         this.l = l;
         this.h = h;
         this.time_steps = time_steps;
         this.l_steps = l_steps;
+
+        //---------
+        this.dt = maxTime / time_steps;
+        this.dz = l / l_steps;
+        this.dy = h / h_steps;
     }
 
     @Modifiable
@@ -60,15 +62,18 @@ public class Settings implements Cloneable {
     double xLeft = 0.0;
     double xRight = 1.0;
 
-    double dt = 1.0;
-    double dz = 0.001;
-    double dy = 0.001;
     double maxTime = 2000;
     double l = 0.05;
     double h = 0.02;
-    int time_steps = (int) (maxTime / dt);
-    int l_steps = (int) (l / dz);
-    int h_steps = (int) (h / dy);
+    @Modifiable
+    int time_steps = 2000;
+    @Modifiable
+    int l_steps = 50;
+    @Modifiable
+    int h_steps = 20;
+    double dt = maxTime / time_steps;
+    double dz = l / l_steps;
+    double dy = h / h_steps;
 
 
     @Override
