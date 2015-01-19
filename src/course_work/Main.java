@@ -5,17 +5,15 @@ import course_work.gui.DoubleDimensionDataSource;
 import course_work.gui.GUIHelper;
 import course_work.gui.SingleDimensionDataSource;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 /**
  * User: gtkachenko
  * Date: 17/01/15
  */
 public class Main {
 
-    // TODO: add params
-    public static SingleDimensionDataSource[] getSingleDimensionDataSources(Settings settings) {
+    public static SingleDimensionDataSource[] getSingleDimensionDataSources(Settings settings, int methodId) {
+        // TODO: use MethodMap.methodMap.get(methodId)
+
         ComputationMethod<double[]> simpleComputationMethod = new EulerExplicitForwardMethod();
         simpleComputationMethod.init(settings);
         final CachedComputationMethod<double[]> computationMethod = new CachedComputationMethod(simpleComputationMethod);
@@ -43,8 +41,9 @@ public class Main {
         return singleDimensionDataSources;
     }
 
-    // TODO: add params
-    public static DoubleDimensionDataSource[] getDoubleDimensionDataSources(Settings settings) {
+    public static DoubleDimensionDataSource[] getDoubleDimensionDataSources(Settings settings, int methodId) {
+        // TODO: use MethodMap.methodMap.get(methodId)
+
         ComputationMethod<double[][]> simpleComputationMethod = new EulerExplicitForwardMethod2D();
         simpleComputationMethod.init(settings);
         final CachedComputationMethod<double[][]> computationMethod = new CachedComputationMethod(simpleComputationMethod);

@@ -34,6 +34,7 @@ public class MainGui extends JFrame {
     private JPanel paramsPanel;
     private JPanel graphsLayout;
     private JSlider speedSlider;
+    private JComboBox algoSelector;
     private boolean is1DimensionalState;
     private List<AnimatedPanel> currentAnimatedPanels = new ArrayList<>();
     private SingleDimensionDataSource[] singleDimensionDataSources;
@@ -44,8 +45,8 @@ public class MainGui extends JFrame {
 
     public MainGui() throws HeadlessException {
         this.settings = new Settings();
-        this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings));
-        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings));
+        this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), 0);
+        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), 0);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dimensionSelector.addItemListener(new ItemListener() {
@@ -56,6 +57,15 @@ public class MainGui extends JFrame {
                 }
             }
         });
+        algoSelector.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                stopAnimations();
+                updateSources();
+                refreshGraphsPanel(is1DimensionalState);
+            }
+        });
+
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,8 +124,8 @@ public class MainGui extends JFrame {
     private void updateSources() {
         if (needToUpdateSources) {
             needToUpdateSources = false;
-            MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings));
-            MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings));
+            MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex());
+            MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex());
             refreshGraphsPanel(is1DimensionalState);
         }
     }
@@ -258,7 +268,7 @@ public class MainGui extends JFrame {
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
         startButton = new JButton();
@@ -282,7 +292,7 @@ public class MainGui extends JFrame {
         paramsPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(paramsPanel, gbc);
         speedSlider = new JSlider();
@@ -290,14 +300,27 @@ public class MainGui extends JFrame {
         speedSlider.setPaintLabels(true);
         speedSlider.setPaintTicks(true);
         speedSlider.setSnapToTicks(true);
-        speedSlider.setValue(500);
+        speedSlider.setValue(100);
         speedSlider.setValueIsAdjusting(true);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(speedSlider, gbc);
+        algoSelector = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
+        defaultComboBoxModel2.addElement("Явная схема");
+        defaultComboBoxModel2.addElement("Частично неявная схема");
+        defaultComboBoxModel2.addElement("Частично неявная схема + диагональ");
+        defaultComboBoxModel2.addElement("Частично неявная схема с итерациями");
+        algoSelector.setModel(defaultComboBoxModel2);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(algoSelector, gbc);
         graphsLayout = new JPanel();
         graphsLayout.setLayout(new GridBagLayout());
         rootPanel.add(graphsLayout, BorderLayout.CENTER);
