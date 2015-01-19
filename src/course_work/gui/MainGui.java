@@ -1,17 +1,26 @@
 package course_work.gui;
 
 import course_work.Main;
+import course_work.algo.Modifiable;
 import course_work.algo.Settings;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Arc2D;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -31,11 +40,15 @@ public class MainGui extends JFrame {
     private List<AnimatedPanel> currentAnimatedPanels = new ArrayList<>();
     private SingleDimensionDataSource[] singleDimensionDataSources;
     private DoubleDimensionDataSource[] doubleDimensionDataSources;
+    private Settings settings;
+    private boolean needToUpdateSources;
+    private boolean isRunning = false;
 
     public MainGui() throws HeadlessException {
-        Settings settings = new Settings();
-        this.singleDimensionDataSources = Main.getSingleDimensionDataSources(settings);
-        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(settings);
+        this.settings = new Settings();
+        this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings));
+        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings));
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dimensionSelector.addItemListener(new ItemListener() {
             @Override
@@ -48,19 +61,13 @@ public class MainGui extends JFrame {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
-                    animatedPanel.animate((speedSlider.getValue() - 400) / 100d);
-                }
-                setStartButtonEnabled(false);
+                startAnimations();
             }
         });
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
-                    animatedPanel.stopAnimation();
-                }
-                setStartButtonEnabled(true);
+                stopAnimations();
             }
         });
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
@@ -78,15 +85,107 @@ public class MainGui extends JFrame {
             }
         });
         setContentPane(rootPanel);
-        for (int i = 0; i < 3; i++) {
-            JPanel panel = new JPanel();
-            panel.setLayout(new FlowLayout());
-            panel.add(new JTextArea("a = "));
-            panel.add(new JTextField(10));
-            addComponent(i, paramsPanel, panel);
-        }
+        addParamFields();
         setUIState(true);
         setSize(new Dimension(500, 500));
+    }
+
+    private void stopAnimations() {
+        if (isRunning) {
+            isRunning = false;
+            for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                animatedPanel.stopAnimation();
+            }
+            setStartButtonEnabled(true);
+        }
+    }
+
+    private void startAnimations() {
+        if (!isRunning) {
+            updateSources();
+            isRunning = true;
+            for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                animatedPanel.animate((speedSlider.getValue() - 400) / 100d);
+            }
+            setStartButtonEnabled(false);
+        }
+
+    }
+
+    private void updateSources() {
+        if (needToUpdateSources) {
+            needToUpdateSources = false;
+            MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings));
+            MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings));
+            setUIState(is1DimensionalState);
+        }
+    }
+
+    private void addParamFields() {
+        Field[] fields = settings.getClass().getDeclaredFields();
+        int it = 0;
+        for (final Field field : fields) {
+            Annotation[] annotations = field.getDeclaredAnnotations();
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof Modifiable) {
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new FlowLayout());
+                    final JTextArea fieldName = new JTextArea(field.getName());
+                    fieldName.setEditable(false);
+                    panel.add(fieldName);
+                    final JTextField comp = new JTextField(10);
+                    try {
+                        field.setAccessible(true);
+                        comp.setText(field.get(settings).toString());
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    comp.getDocument().addDocumentListener(new DocumentListener() {
+                        @Override
+                        public void insertUpdate(DocumentEvent e) {
+                            doUpdate();
+                        }
+
+                        @Override
+                        public void removeUpdate(DocumentEvent e) {
+                            doUpdate();
+                        }
+
+                        @Override
+                        public void changedUpdate(DocumentEvent e) {
+                            doUpdate();
+                        }
+
+                        private void doUpdate() {
+                            if (callSetter(settings, field.getName(), comp.getText())) {
+                                needToUpdateSources = true;
+                            }
+                        }
+                    });
+                    panel.add(comp);
+                    addComponent(it++, paramsPanel, panel);
+                }
+            }
+        }
+    }
+
+    private boolean callSetter(Object target, String valueName, String value) {
+        try {
+            if (value == null || value.isEmpty()) {
+                return false;
+            }
+            valueName = Character.toUpperCase(valueName.charAt(0)) + valueName.substring(1);
+            Method method = target.getClass().getDeclaredMethod("set" + valueName, double.class);
+            method.invoke(target, Double.parseDouble(value));
+            return true;
+        } catch (NoSuchMethodException e1) {
+            e1.printStackTrace();
+        } catch (InvocationTargetException e1) {
+            e1.printStackTrace();
+        } catch (IllegalAccessException e1) {
+            e1.printStackTrace();
+        }
+        return true;
     }
 
     private void setStartButtonEnabled(boolean enabled) {
@@ -95,13 +194,7 @@ public class MainGui extends JFrame {
     }
 
     private void setUIState(boolean is1Dimensional) {
-        for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
-            animatedPanel.stopAnimation();
-
-        }
-        speedSlider.setValue(speedSlider.getMaximum() / 2);
-        setStartButtonEnabled(true);
-
+        stopAnimations();
         graphsLayout.removeAll();
         currentAnimatedPanels.clear();
         graphsLayout.revalidate();
