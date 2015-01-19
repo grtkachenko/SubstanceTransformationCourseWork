@@ -3,9 +3,11 @@ package course_work.algo;
 /**
  * Created by antonkov on 1/18/2015.
  */
-public class Settings implements Cloneable {
+public class Settingsg {
 
-    public Settings() {}
+    public Settings() {
+        initParams();
+    }
 
     public Settings(Settings from) {
         this(from.h_steps, from.R, from.E, from.K, from.alpha, from.Q, from.C, from.rho, from.T0, from.Tm, from.lam, from.kappa, from.D, from.xLeft,
@@ -36,7 +38,10 @@ public class Settings implements Cloneable {
         this.time_steps = time_steps;
         this.l_steps = l_steps;
 
-        //---------
+        initParams();
+    }
+
+    private void initParams() {
         this.dt = maxTime / time_steps;
         this.dz = l / l_steps;
         this.dy = h / h_steps;
@@ -75,11 +80,6 @@ public class Settings implements Cloneable {
     double dt;
     double dz;
     double dy;
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 
     public void setR(double r) {
         R = r;
