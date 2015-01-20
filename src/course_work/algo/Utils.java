@@ -8,6 +8,10 @@ public class Utils {
         return -s.K * Math.pow(x, s.alpha) * Math.exp(-s.E / (s.R * t));
     }
 
+    public static double wWithoutOneX(double x, double t, final Settings s) {
+        return -s.K * Math.pow(x, s.alpha - 1) * Math.exp(-s.E / (s.R * t));
+    }
+
     public static double[] solveTridiagonal(double[] a, double[] b, double[] c, double[] d) {
         final int n = a.length;
         final double[] res = new double[n];
