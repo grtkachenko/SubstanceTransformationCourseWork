@@ -9,6 +9,9 @@ public class Utils {
     }
 
     public static double wWithoutOneX(double x, double t, final Settings s) {
+//        if (x < 1e-7) {
+//            return -s.K * Math.exp(-s.E / (s.R * t));
+//        }
         return -s.K * Math.pow(x, s.alpha - 1) * Math.exp(-s.E / (s.R * t));
     }
 

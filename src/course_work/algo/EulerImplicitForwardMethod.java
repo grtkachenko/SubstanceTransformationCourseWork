@@ -38,7 +38,7 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
 
     @Override
     public void makeStep() {
-        final int ITER_COUNT = 1;
+        final int ITER_COUNT = 5;
         final Settings s = getSettings();
         final int n = X.length;
         double[] lastX = X.clone();
@@ -51,8 +51,8 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
                 a[i] = c[i] = -s.D * s.dt / s.dz / s.dz;
-                d[i] = X[i];
-                b[i] = 1 + 2 * s.D * s.dt / s.dz / s.dz - Utils.wWithoutOneX(lastX[i], T[i], s) * s.dt ;
+                d[i] = X[i] ;
+                b[i] = 1 + 2 * s.D * s.dt / s.dz / s.dz - Utils.wWithoutOneX(lastX[i], T[i], s) * s.dt;
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
@@ -82,11 +82,8 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
         T = newT;
         W = new double[n];
         for (int i = 0; i < n; i++) {
-            W[i] = -Utils.w(X[i], T[i], getSettings());
+            W[i] = -Utils.w(X[i], T[i], settings);
         }
-        newT = lastT;
-        X = newX;
-        T = newT;
     }
 
     @Override
