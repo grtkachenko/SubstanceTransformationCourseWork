@@ -11,12 +11,12 @@ public class Settings {
 
     public Settings(Settings from) {
         this(from.h_steps, from.R, from.E, from.K, from.alpha, from.Q, from.C, from.rho, from.T0, from.Tw, from.lam, from.kappa, from.D, from.xLeft,
-                from.xRight, from.dt, from.dz, from.dy, from.maxTime, from.l, from.h, from.time_steps, from.l_steps, from.Tw, from.compTime);
+                from.xRight, from.dt, from.dz, from.dy, from.maxTime, from.l, from.h, from.time_steps, from.l_steps, from.countIterations, from.Tw, from.compTime);
     }
 
     private Settings(int h_steps, double r, double e, double k, double alpha, double q, double c,
                     double rho, double t0, double tm, double lam, double kappa, double d, double xLeft,
-                    double xRight, double dt, double dz, double dy, double maxTime, double l, double h, int time_steps, int l_steps, double tw, int compTime) {
+                    double xRight, double dt, double dz, double dy, double maxTime, double l, double h, int time_steps, int l_steps, int countIterations, double tw, int compTime) {
         this.h_steps = h_steps;
         R = r;
         E = e;
@@ -38,6 +38,7 @@ public class Settings {
         this.time_steps = time_steps;
         this.l_steps = l_steps;
         this.compTime = compTime;
+        this.countIterations = countIterations;
         Tm = tm;
 
         initParams();
@@ -75,13 +76,15 @@ public class Settings {
     double l = 0.05;
     double h = 0.02;
     @Modifiable
-    int time_steps = 2000;
+    int time_steps = 6000;
     @Modifiable
     int l_steps = 50;
     @Modifiable
     int h_steps = 20;
     @Modifiable
     int compTime = 20;
+    @Modifiable
+    int countIterations = 5;
 
     double dt;
     double dz;

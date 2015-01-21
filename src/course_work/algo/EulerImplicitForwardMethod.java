@@ -12,7 +12,7 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
     public double[] initialT() {
         double[] t = new double[settings.l_steps];
         Arrays.fill(t, settings.T0);
-        t[0] = settings.Tm;
+        t[0] = settings.Tw;
         return t;
     }
 
@@ -40,43 +40,48 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
     public void makeStep() {
         final Settings s = getSettings();
         final int n = X.length;
+        double[] lastX = X.clone();
+        double[] lastT = T.clone();
         double[] newX, newT;
-        {
+        for (int iter = 0; iter < s.countIterations; iter++) {
             final double[] a = new double[n];
             final double[] b = new double[n];
             final double[] c = new double[n];
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
                 a[i] = c[i] = -s.D * s.dt / s.dz / s.dz;
-                d[i] = Utils.w(X[i], T[i], s) * s.dt + X[i];
-                b[i] = 1 + 2 * s.D * s.dt / s.dz / s.dz;
+                d[i] = X[i] ;
+                b[i] = 1 + 2 * s.D * s.dt / s.dz / s.dz - Utils.wWithoutOneX(lastX[i], T[i], s) * s.dt;
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
             d[0] = s.xLeft;
             d[n - 1] = s.xRight;
-            newX = Utils.solveTridiagonal(a, b, c, d);
+            lastX = Utils.solveTridiagonal(a, b, c, d);
         }
-        {
+        newX = lastX;
+        for (int iter = 0; iter < s.countIterations; iter++) {
             final double[] a = new double[n];
             final double[] b = new double[n];
             final double[] c = new double[n];
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
                 a[i] = c[i] = -s.kappa * s.dt / s.dz / s.dz;
-                d[i] = -s.Q / s.C * Utils.w(X[i], T[i], s) * s.dt + T[i];
+                d[i] = -s.Q / s.C * Utils.w(X[i], lastT[i], s) * s.dt + T[i];
                 b[i] = 1 + 2 * s.kappa * s.dt / s.dz / s.dz;
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
-            d[0] = s.Tm;
+            d[0] = s.Tw;
             d[n - 1] = s.T0;
-            newT = Utils.solveTridiagonal(a, b, c, d);
+            lastT = Utils.solveTridiagonal(a, b, c, d);
         }
-        X = newX; T = newT;
+        newT = lastT;
+        X = newX;
+        T = newT;
         W = new double[n];
         for (int i = 0; i < n; i++) {
-            W[i] = -Utils.w(X[i], T[i], getSettings());
+            W[i] = -Utils.w(X[i], T[i], settings);
         }
     }
 

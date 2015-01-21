@@ -263,16 +263,18 @@ public class MainGui extends JFrame {
             valueName = Character.toUpperCase(valueName.charAt(0)) + valueName.substring(1);
             Method method = target.getClass().getDeclaredMethod("set" + valueName, classValue);
             if (classValue == double.class) {
-                method.invoke(target, Double.parseDouble(value));
+                try {
+                    method.invoke(target, Double.parseDouble(value));
+                } catch (Throwable ignore) {
+                }
             } else {
-                method.invoke(target, Integer.parseInt(value));
+                try {
+                    method.invoke(target, Integer.parseInt(value));
+                } catch (Throwable ignore) {
+                }
             }
             return true;
         } catch (NoSuchMethodException e1) {
-            e1.printStackTrace();
-        } catch (InvocationTargetException e1) {
-            e1.printStackTrace();
-        } catch (IllegalAccessException e1) {
             e1.printStackTrace();
         }
         return true;
