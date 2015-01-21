@@ -1,6 +1,7 @@
 package course_work.gui;
 
 import course_work.Main;
+import course_work.algo.CachedComputationMethod;
 import course_work.algo.Modifiable;
 import course_work.algo.Settings;
 
@@ -35,6 +36,8 @@ public class MainGui extends JFrame {
     private JPanel graphsLayout;
     private JSlider speedSlider;
     private JComboBox algoSelector;
+    private JProgressBar progressBar;
+    private JButton stopComputingButton;
     private boolean is1DimensionalState;
     private List<AnimatedPanel> currentAnimatedPanels = new ArrayList<>();
     private SingleDimensionDataSource[] singleDimensionDataSources;
@@ -45,24 +48,25 @@ public class MainGui extends JFrame {
 
     public MainGui() throws HeadlessException {
         this.settings = new Settings();
-        this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), 0);
-        this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), 0);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dimensionSelector.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    refreshGraphsPanel(!is1DimensionalState);
+                    is1DimensionalState = !is1DimensionalState;
+                    stopAnimations();
+                    initSources();
                 }
             }
         });
         algoSelector.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                stopAnimations();
-                updateSources(true);
-                refreshGraphsPanel(is1DimensionalState);
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    stopAnimations();
+                    initSources();
+                }
             }
         });
 
@@ -93,10 +97,46 @@ public class MainGui extends JFrame {
                 }
             }
         });
+        progressBar.setVisible(false);
         setContentPane(rootPanel);
         addParamFields();
-        refreshGraphsPanel(true);
-        setSize(new Dimension(500, 500));
+        is1DimensionalState = true;
+        initSources();
+        setSize(new Dimension(900, 900));
+
+    }
+
+    private void initSources() {
+        System.out.println("initSources");
+        updateSources(new CachedComputationMethod.ComputationProgressListener() {
+            private boolean isStartButtonEnabled;
+
+            @Override
+            public void onProgressChanged(int progress) {
+                progressBar.setValue(progress);
+                System.out.println("onProgressChanged " + progress);
+            }
+
+            @Override
+            public void onComputationStarted() {
+                isStartButtonEnabled = startButton.isEnabled();
+                startButton.setEnabled(false);
+                stopButton.setEnabled(false);
+                progressBar.setValue(0);
+                progressBar.setVisible(true);
+                stopComputingButton.setEnabled(true);
+                System.out.println("onComputationStarted");
+            }
+
+            @Override
+            public void onComputationFinished() {
+                progressBar.setVisible(false);
+                setStartButtonEnabled(isStartButtonEnabled);
+                refreshGraphsPanel(is1DimensionalState);
+                stopComputingButton.setEnabled(false);
+                System.out.println("onComputationFinished");
+            }
+        });
     }
 
     private void stopAnimations() {
@@ -111,27 +151,60 @@ public class MainGui extends JFrame {
 
     private void startAnimations() {
         if (!isRunning) {
-            updateSources();
-            isRunning = true;
-            for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
-                animatedPanel.animate((speedSlider.getValue() - 400) / 100d);
+            if (needToUpdateSources) {
+                updateSources(new CachedComputationMethod.ComputationProgressListener() {
+                    private boolean isStartButtonEnabled;
+
+                    @Override
+                    public void onProgressChanged(int progress) {
+                        progressBar.setValue(progress);
+                        System.out.println("onProgressChanged " + progress);
+                    }
+
+                    @Override
+                    public void onComputationStarted() {
+                        isStartButtonEnabled = startButton.isEnabled();
+                        startButton.setEnabled(false);
+                        stopButton.setEnabled(false);
+                        progressBar.setValue(0);
+                        progressBar.setVisible(true);
+                        System.out.println("onComputationStarted");
+                        stopComputingButton.setEnabled(true);
+
+                    }
+
+                    @Override
+                    public void onComputationFinished() {
+                        progressBar.setVisible(false);
+                        setStartButtonEnabled(isStartButtonEnabled);
+                        System.out.println("onComputationFinished");
+                        refreshGraphsPanel(is1DimensionalState);
+                        isRunning = true;
+                        for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                            animatedPanel.animate((speedSlider.getValue() - 400) / 100d);
+                        }
+                        setStartButtonEnabled(false);
+                        stopComputingButton.setEnabled(false);
+                    }
+                });
+            } else {
+                isRunning = true;
+                for (AnimatedPanel animatedPanel : currentAnimatedPanels) {
+                    animatedPanel.animate((speedSlider.getValue() - 400) / 100d);
+                }
+                setStartButtonEnabled(false);
             }
-            setStartButtonEnabled(false);
         }
 
     }
 
-    private void updateSources(boolean force) {
-        if (needToUpdateSources || force) {
-            needToUpdateSources = false;
-            MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex());
-            MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex());
-            refreshGraphsPanel(is1DimensionalState);
+    private void updateSources(CachedComputationMethod.ComputationProgressListener listener) {
+        needToUpdateSources = false;
+        if (is1DimensionalState) {
+            MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex(), listener, stopComputingButton);
+        } else {
+            MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex(), listener, stopComputingButton);
         }
-    }
-
-    private void updateSources() {
-        updateSources(false);
     }
 
     private void addParamFields() {
@@ -276,7 +349,7 @@ public class MainGui extends JFrame {
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 6;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
         startButton = new JButton();
@@ -292,7 +365,7 @@ public class MainGui extends JFrame {
         dimensionSelector.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(dimensionSelector, gbc);
@@ -300,7 +373,7 @@ public class MainGui extends JFrame {
         paramsPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 7;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(paramsPanel, gbc);
         algoSelector = new JComboBox();
@@ -312,7 +385,7 @@ public class MainGui extends JFrame {
         algoSelector.setModel(defaultComboBoxModel2);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(algoSelector, gbc);
@@ -325,10 +398,36 @@ public class MainGui extends JFrame {
         speedSlider.setValueIsAdjusting(true);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 8;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(speedSlider, gbc);
+        progressBar = new JProgressBar();
+        progressBar.setValue(0);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(progressBar, gbc);
+        final JPanel spacer1 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        panel1.add(spacer1, gbc);
+        stopComputingButton = new JButton();
+        stopComputingButton.setText("Stop computing");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(stopComputingButton, gbc);
+        final JPanel spacer2 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        panel1.add(spacer2, gbc);
         graphsLayout = new JPanel();
         graphsLayout.setLayout(new GridBagLayout());
         rootPanel.add(graphsLayout, BorderLayout.CENTER);
