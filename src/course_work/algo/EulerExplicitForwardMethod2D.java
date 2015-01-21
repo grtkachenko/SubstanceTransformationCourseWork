@@ -1,5 +1,6 @@
 package course_work.algo;
 
+import javax.rmi.CORBA.Util;
 import java.util.Arrays;
 
 /**
@@ -61,10 +62,20 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
                 newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j) / s.dz / s.dz + w(X[i][j], T[i][j]));
                 newT[i][j] = T[i][j] + s.dt * (s.kappa * der2(T, i, j) / s.dz / s.dz - s.Q / s.C * w(X[i][j], T[i][j]));
             }
+            newX[i][0] = newX[i][1];
+            newX[i][X[0].length - 1] = newX[i][X[0].length - 2];
+            newT[i][0] = newT[i][1];
+            newT[i][T[0].length - 1] = newT[i][T[0].length - 2];
         }
         Arrays.fill(newX[X.length - 1], s.xRight);
         Arrays.fill(newT[T.length - 1], s.T0);
         X = newX; T = newT;
+        W = new double[settings.l_steps][settings.h_steps];
+        for (int i = 0; i < settings.l_steps; i++) {
+            for (int j = 0; j < settings.h_steps; j++) {
+                W[i][j] = -Utils.w(X[i][j], T[i][j], getSettings());
+            }
+        }
     }
 
     @Override

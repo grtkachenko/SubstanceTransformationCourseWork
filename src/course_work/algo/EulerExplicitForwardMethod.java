@@ -55,6 +55,10 @@ public class EulerExplicitForwardMethod implements ComputationMethod<double[]> {
         }
         newX[X.length - 1] = s.xRight; newT[T.length - 1] = s.T0;
         X = newX; T = newT;
+        W = new double[X.length];
+        for (int i = 0; i < X.length; i++) {
+            W[i] = -Utils.w(X[i], T[i], getSettings());
+        }
     }
 
     @Override

@@ -74,6 +74,10 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
             newT = Utils.solveTridiagonal(a, b, c, d);
         }
         X = newX; T = newT;
+        W = new double[n];
+        for (int i = 0; i < n; i++) {
+            W[i] = -Utils.w(X[i], T[i], getSettings());
+        }
     }
 
     @Override
