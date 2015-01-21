@@ -12,7 +12,7 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
     public double[] initialT() {
         double[] t = new double[settings.l_steps];
         Arrays.fill(t, settings.T0);
-        t[0] = settings.Tm;
+        t[0] = settings.Tw;
         return t;
     }
 
@@ -73,7 +73,7 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
-            d[0] = s.Tm;
+            d[0] = s.Tw;
             d[n - 1] = s.T0;
             lastT = Utils.solveTridiagonal(a, b, c, d);
         }
