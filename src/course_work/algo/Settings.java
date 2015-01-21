@@ -10,12 +10,12 @@ public class Settings {
     }
 
     public Settings(Settings from) {
-        this(from.h_steps, from.R, from.E, from.K, from.alpha, from.Q, from.C, from.rho, from.T0, from.Tm, from.lam, from.kappa, from.D, from.xLeft,
+        this(from.h_steps, from.R, from.E, from.K, from.alpha, from.Q, from.C, from.rho, from.T0, from.Tw, from.lam, from.kappa, from.D, from.xLeft,
                 from.xRight, from.dt, from.dz, from.dy, from.maxTime, from.l, from.h, from.time_steps, from.l_steps);
     }
 
     private Settings(int h_steps, double r, double e, double k, double alpha, double q, double c,
-                    double rho, double t0, double tm, double lam, double kappa, double d, double xLeft,
+                    double rho, double t0, double tw, double lam, double kappa, double d, double xLeft,
                     double xRight, double dt, double dz, double dy, double maxTime, double l, double h, int time_steps, int l_steps) {
         this.h_steps = h_steps;
         R = r;
@@ -26,7 +26,7 @@ public class Settings {
         C = c;
         this.rho = rho;
         T0 = t0;
-        Tm = tm;
+        Tw = tw;
         this.lam = lam;
         this.kappa = kappa;
         D = d;
@@ -61,6 +61,8 @@ public class Settings {
     double rho = 830.0;
     double T0 = 293.0;
     double Tm = T0 + Q / C;
+    @Modifiable
+    double Tw = 610;
     double lam = 0.13;
     double kappa = lam / (rho * C);
     double D = kappa; // var
@@ -114,8 +116,8 @@ public class Settings {
         T0 = t0;
     }
 
-    public void setTm(double tm) {
-        Tm = tm;
+    public void setTw(double tw) {
+        Tw = tw;
     }
 
     public void setLam(double lam) {

@@ -1,6 +1,5 @@
 package course_work.algo;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
@@ -22,7 +21,7 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
         double[][] t = new double[settings.l_steps][settings.h_steps];
         for (double[] ts : t)
             Arrays.fill(ts, settings.T0);
-        Arrays.fill(t[0], settings.Tm);
+        Arrays.fill(t[0], settings.Tw);
         return t;
     }
 
@@ -56,7 +55,7 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
         Settings s = getSettings();
         double[][] newX = new double[X.length][X[0].length], newT = new double[T.length][T[0].length];
         Arrays.fill(newX[0], s.xLeft);
-        Arrays.fill(newT[0], s.Tm);
+        Arrays.fill(newT[0], s.Tw);
         for (int i = 1; i < X.length - 1; ++i) {
             for (int j = 1; j < X[0].length - 1; ++j) {
                 newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j) / s.dz / s.dz + w(X[i][j], T[i][j]));

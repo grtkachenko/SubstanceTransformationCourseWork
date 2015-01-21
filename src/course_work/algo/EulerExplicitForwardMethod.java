@@ -20,7 +20,7 @@ public class EulerExplicitForwardMethod implements ComputationMethod<double[]> {
     public double[] initialT() {
         double[] t = new double[settings.l_steps];
         Arrays.fill(t, settings.T0);
-        t[0] = settings.Tm;
+        t[0] = settings.Tw;
         return t;
     }
 
@@ -48,7 +48,7 @@ public class EulerExplicitForwardMethod implements ComputationMethod<double[]> {
     public void makeStep() {
         Settings s = getSettings();
         double[] newX = new double[X.length], newT = new double[T.length];
-        newX[0] = s.xLeft; newT[0] = s.Tm;
+        newX[0] = s.xLeft; newT[0] = s.Tw;
         for (int i = 1; i < X.length - 1; ++i) {
             newX[i] = X[i] + s.dt * (s.D * (X[i + 1] - 2 * X[i] + X[i - 1]) / s.dz / s.dz + Utils.w(X[i], T[i], getSettings()));
             newT[i] = T[i] + s.dt * (s.kappa * (T[i + 1] - 2 * T[i] + T[i - 1]) / s.dz / s.dz - s.Q / s.C * Utils.w(X[i], T[i], getSettings()));
