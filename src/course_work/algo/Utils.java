@@ -9,10 +9,12 @@ public class Utils {
     }
 
     public static double wWithoutOneX(double x, double t, final Settings s) {
-//        if (x < 1e-7) {
-//            return -s.K * Math.exp(-s.E / (s.R * t));
-//        }
         return -s.K * Math.pow(x, s.alpha - 1) * Math.exp(-s.E / (s.R * t));
+        /*double val = 1;
+        if (Math.abs(s.alpha - 1) > 1e-7) {
+            val = Math.pow(x, s.alpha - 1);
+        }
+        return -s.K * val * Math.exp(-s.E / (s.R * t));*/
     }
 
     public static double[] solveTridiagonal(double[] a, double[] b, double[] c, double[] d) {

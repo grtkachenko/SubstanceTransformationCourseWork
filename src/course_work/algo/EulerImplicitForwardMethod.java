@@ -38,13 +38,12 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
 
     @Override
     public void makeStep() {
-        final int ITER_COUNT = 5;
         final Settings s = getSettings();
         final int n = X.length;
         double[] lastX = X.clone();
         double[] lastT = T.clone();
         double[] newX, newT;
-        for (int iter = 0; iter < ITER_COUNT; iter++) {
+        for (int iter = 0; iter < s.countIterations; iter++) {
             final double[] a = new double[n];
             final double[] b = new double[n];
             final double[] c = new double[n];
@@ -61,7 +60,7 @@ public class EulerImplicitForwardMethod implements ComputationMethod<double[]> {
             lastX = Utils.solveTridiagonal(a, b, c, d);
         }
         newX = lastX;
-        for (int iter = 0; iter < ITER_COUNT; iter++) {
+        for (int iter = 0; iter < s.countIterations; iter++) {
             final double[] a = new double[n];
             final double[] b = new double[n];
             final double[] c = new double[n];
