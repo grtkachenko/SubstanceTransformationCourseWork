@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Arc2D;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -65,7 +66,7 @@ public class MainGui extends JFrame {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     stopAnimations();
-                    initSources();
+                    needToUpdateSources = true;
                 }
             }
         });
@@ -119,22 +120,26 @@ public class MainGui extends JFrame {
 
             @Override
             public void onComputationStarted() {
-                isStartButtonEnabled = startButton.isEnabled();
-                startButton.setEnabled(false);
-                stopButton.setEnabled(false);
-                progressBar.setValue(0);
-                progressBar.setVisible(true);
-                stopComputingButton.setEnabled(true);
-                System.out.println("onComputationStarted");
+                    isStartButtonEnabled = startButton.isEnabled();
+                    startButton.setEnabled(false);
+                    stopButton.setEnabled(false);
+                    progressBar.setValue(0);
+                    progressBar.setVisible(true);
+                    stopComputingButton.setEnabled(true);
+                    algoSelector.setEnabled(false);
+                    dimensionSelector.setEnabled(false);
+                    System.out.println("onComputationStarted");
             }
 
             @Override
             public void onComputationFinished() {
-                progressBar.setVisible(false);
-                setStartButtonEnabled(isStartButtonEnabled);
-                refreshGraphsPanel(is1DimensionalState);
-                stopComputingButton.setEnabled(false);
-                System.out.println("onComputationFinished");
+                    progressBar.setVisible(false);
+                    setStartButtonEnabled(isStartButtonEnabled);
+                    refreshGraphsPanel(is1DimensionalState);
+                    stopComputingButton.setEnabled(false);
+                    algoSelector.setEnabled(true);
+                    dimensionSelector.setEnabled(true);
+                    System.out.println("onComputationFinished");
             }
         });
     }
@@ -170,7 +175,8 @@ public class MainGui extends JFrame {
                         progressBar.setVisible(true);
                         System.out.println("onComputationStarted");
                         stopComputingButton.setEnabled(true);
-
+                        algoSelector.setEnabled(false);
+                        dimensionSelector.setEnabled(false);
                     }
 
                     @Override
@@ -185,6 +191,8 @@ public class MainGui extends JFrame {
                         }
                         setStartButtonEnabled(false);
                         stopComputingButton.setEnabled(false);
+                        algoSelector.setEnabled(true);
+                        dimensionSelector.setEnabled(true);
                     }
                 });
             } else {
@@ -222,7 +230,13 @@ public class MainGui extends JFrame {
                     final JTextField comp = new JTextField(10);
                     try {
                         field.setAccessible(true);
-                        comp.setText(field.get(settings).toString());
+                        String targetText;
+                        if (field.get(settings) instanceof Double && field.getName().equals("D")) {
+                            targetText = String.format("%.13f", (Double) field.get(settings));
+                        } else {
+                            targetText = field.get(settings).toString();
+                        }
+                        comp.setText(targetText);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
