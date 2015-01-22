@@ -33,19 +33,16 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
 
     @Override
     public Settings getSettings() { return settings; }
-    static int counter = 0;
+
     @Override
     public void makeStep() {
-//        counter++;
-//        if (counter == 50)
-//            throw new AssertionError();
         final Settings s = getSettings();
         final int n = X.length;
 
         final double[][][] a = new double[n][2][2];
         final double[][][] b = new double[n][2][2];
         final double[][][] c = new double[n][2][2];
-        final double[][][] d = new double[n][1][2];
+        final double[][][] d = new double[n][2][1];
         for (int i = 0; i < n; i++) {
             a[i][0][0] = c[i][0][0] = s.D / s.dz / s.dz;
             a[i][1][1] = c[i][1][1] = s.kappa / s.dz / s.dz;
@@ -54,64 +51,27 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
             b[i][1][1] = -2 * s.kappa / s.dz / s.dz - 1 / s.dt;
             b[i][1][0] = -s.Q / s.C * Utils.wWithoutOneX(X[i], T[i], s);
             d[i][0][0] = -X[i] / s.dt;
-            d[i][0][1] = -T[i] / s.dt;
+            d[i][1][0] = -T[i] / s.dt;
         }
         b[0] = new double[][]{{1, 0}, {0, 1}};
         c[0] = new double[][]{{0, 0}, {0, 0}};
-        d[0] = new double[][]{{s.xLeft, s.Tw}};
+        d[0] = new double[][]{{s.xLeft}, {s.Tw}};
         b[b.length - 1] = new double[][]{{1, 0}, {0, 1}};
         a[a.length - 1] = new double[][]{{0, 0}, {0, 0}};
-        d[d.length - 1] = new double[][]{{s.xRight, s.T0}};
-
-//        System.out.println(Arrays.deepToString(a));
-//        System.out.println(Arrays.deepToString(b));
-//        System.out.println(Arrays.deepToString(c));
-//        System.out.println(Arrays.deepToString(d));
+        d[d.length - 1] = new double[][]{{s.xRight}, {s.T0}};
 
         double[][][] res = Utils.solveTridiagonal(a, b, c, d);
-        double[] newX = new double[n];
-        double[] newT = new double[n];
+        X = new double[n];
+        T = new double[n];
         for (int i = 0; i < n; ++i) {
-            newX[i] = res[i][0][0];
-//            if (X[i] > 2) {
-//                throw new AssertionError();
-//            }
-            newT[i] = res[i][0][1];
+            X[i] = res[i][0][0];
+            T[i] = res[i][1][0];
         }
 
-        {
-            // check
-//            for (int i = 0; i < n; i++) {
-//                a[i][0][0] = c[i][0][0] = s.D / s.dz / s.dz;
-//                a[i][1][1] = c[i][1][1] = s.kappa / s.dz / s.dz;
-//                a[i][0][1] = a[i][1][0] = c[i][0][1] = c[i][1][0] = b[i][0][1] = 0.0;
-//                b[i][0][0] = -2 * s.D / s.dz / s.dz - 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s);
-//                b[i][1][1] = -2 * s.kappa / s.dz / s.dz - 1 / s.dt;
-//                b[i][1][0] = -s.Q / s.C * Utils.wWithoutOneX(X[i], T[i], s);
-//                d[i][0][0] = -X[i] / s.dt;
-//                d[i][0][1] = -T[i] / s.dt;
-//            }
-//            b[0] = new double[][]{{1, 0}, {0, 1}};
-//            c[0] = new double[][]{{0, 0}, {0, 0}};
-//            d[0] = new double[][]{{s.xLeft, s.Tw}};
-//            b[b.length - 1] = new double[][]{{1, 0}, {0, 1}};
-//            a[a.length - 1] = new double[][]{{0, 0}, {0, 0}};
-//            d[d.length - 1] = new double[][]{{s.xRight, s.T0}};
-//            for (int i = 0; i < a.length; i++) {
-//
-//            }
-        }
-
-        X = newX;
-        T = newT;
         W = new double[n];
         for (int i = 0; i < n; i++) {
             W[i] = -Utils.w(X[i], T[i], settings);
         }
-
-        System.out.println("AAA");
-        System.out.println(Arrays.toString(X));
-        System.out.println(Arrays.toString(T));
     }
 
     @Override

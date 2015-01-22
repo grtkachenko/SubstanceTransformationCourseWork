@@ -12,11 +12,6 @@ public class Utils {
 
     public static double wWithoutOneX(double x, double t, final Settings s) {
         return -s.K * Math.pow(x, s.alpha - 1) * Math.exp(-s.E / (s.R * t));
-        /*double val = 1;
-        if (Math.abs(s.alpha - 1) > 1e-7) {
-            val = Math.pow(x, s.alpha - 1);
-        }
-        return -s.K * val * Math.exp(-s.E / (s.R * t));*/
     }
 
     public static double[] solveTridiagonal(double[] a, double[] b, double[] c, double[] d) {
@@ -41,23 +36,27 @@ public class Utils {
         final int n = a.length;
         final double[][][] res = new double[n][][];
         for (int i = 0; i + 1 < n; i++) {
-            final double mul[][] = mult(getReversed(b[i]), a[i + 1]);
-            subtract(b[i + 1], mult(c[i], mul));
-            subtract(d[i + 1], mult(d[i], mul));
+            final double mul[][] = mult(a[i + 1], getReversed(b[i]));
+            subtract(b[i + 1], mult(mul, c[i]));
+            subtract(d[i + 1], mult(mul, d[i]));
+            a[i + 1] = new double[][]{{0, 0}, {0, 0}};
         }
         for (int i = n - 1; i > 0; i--) {
-            final double mul[][] = mult(getReversed(b[i]), c[i - 1]);
-            subtract(d[i - 1], mult(d[i], mul));
+            final double mul[][] = mult(c[i - 1], getReversed(b[i]));
+            subtract(d[i - 1], mult(mul, d[i]));
+            c[i - 1] = new double[][]{{0, 0}, {0, 0}};
         }
         for (int i = 0; i < n; i++) {
-            res[i] = mult(d[i], getReversed(b[i]));
+            res[i] = mult(getReversed(b[i]), d[i]);
         }
+
         return res;
     }
 
     public static double[][] getReversed(double[][] a) {
         final double [][] res = new double[2][2];
-        final double mul = 1.0 / (a[0][0] * a[1][1] - a[1][0] * a[0][1]);
+        final double det = (a[0][0] * a[1][1] - a[1][0] * a[0][1]);
+        final double mul = 1.0 / det;
         res[0][0] = a[1][1] * mul;
         res[0][1] = -a[0][1] * mul;
         res[1][0] = -a[1][0] * mul;
