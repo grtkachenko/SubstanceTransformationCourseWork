@@ -4,7 +4,7 @@ import javax.rmi.CORBA.Util;
 import java.util.Arrays;
 
 /**
- * Created by antonkov on 1/18/2015.
+ * Created by Borys Minaiev on 1/18/2015.
  */
 public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][]> {
     double[][] T, X, W;
