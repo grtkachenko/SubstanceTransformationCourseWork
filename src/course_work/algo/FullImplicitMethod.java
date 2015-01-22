@@ -46,15 +46,13 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
         final double[][][] b = new double[n][2][2];
         final double[][][] c = new double[n][2][2];
         final double[][][] d = new double[n][1][2];
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             a[i][0][0] = c[i][0][0] = s.D / s.dz / s.dz;
             a[i][1][1] = c[i][1][1] = s.kappa / s.dz / s.dz;
             a[i][0][1] = a[i][1][0] = c[i][0][1] = c[i][1][0] = b[i][0][1] = 0.0;
             b[i][0][0] = -2 * s.D / s.dz / s.dz - 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s);
-//                    s.K * Math.pow(X[i], s.alpha - 1) * Math.exp(-s.E / s.R / T[i]);
             b[i][1][1] = -2 * s.kappa / s.dz / s.dz - 1 / s.dt;
             b[i][1][0] = -s.Q / s.C * Utils.wWithoutOneX(X[i], T[i], s);
-//                    s.K * Math.pow(X[i], s.alpha - 1) * Math.exp(-s.E / s.R / T[i]);
             d[i][0][0] = -X[i] / s.dt;
             d[i][0][1] = -T[i] / s.dt;
         }
@@ -71,12 +69,41 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
 //        System.out.println(Arrays.deepToString(d));
 
         double[][][] res = Utils.solveTridiagonal(a, b, c, d);
-        X = new double[n];
-        T = new double[n];
+        double[] newX = new double[n];
+        double[] newT = new double[n];
         for (int i = 0; i < n; ++i) {
-            X[i] = res[i][0][0];
-            T[i] = res[i][0][1];
+            newX[i] = res[i][0][0];
+//            if (X[i] > 2) {
+//                throw new AssertionError();
+//            }
+            newT[i] = res[i][0][1];
         }
+
+        {
+            // check
+//            for (int i = 0; i < n; i++) {
+//                a[i][0][0] = c[i][0][0] = s.D / s.dz / s.dz;
+//                a[i][1][1] = c[i][1][1] = s.kappa / s.dz / s.dz;
+//                a[i][0][1] = a[i][1][0] = c[i][0][1] = c[i][1][0] = b[i][0][1] = 0.0;
+//                b[i][0][0] = -2 * s.D / s.dz / s.dz - 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s);
+//                b[i][1][1] = -2 * s.kappa / s.dz / s.dz - 1 / s.dt;
+//                b[i][1][0] = -s.Q / s.C * Utils.wWithoutOneX(X[i], T[i], s);
+//                d[i][0][0] = -X[i] / s.dt;
+//                d[i][0][1] = -T[i] / s.dt;
+//            }
+//            b[0] = new double[][]{{1, 0}, {0, 1}};
+//            c[0] = new double[][]{{0, 0}, {0, 0}};
+//            d[0] = new double[][]{{s.xLeft, s.Tw}};
+//            b[b.length - 1] = new double[][]{{1, 0}, {0, 1}};
+//            a[a.length - 1] = new double[][]{{0, 0}, {0, 0}};
+//            d[d.length - 1] = new double[][]{{s.xRight, s.T0}};
+//            for (int i = 0; i < a.length; i++) {
+//
+//            }
+        }
+
+        X = newX;
+        T = newT;
         W = new double[n];
         for (int i = 0; i < n; i++) {
             W[i] = -Utils.w(X[i], T[i], settings);

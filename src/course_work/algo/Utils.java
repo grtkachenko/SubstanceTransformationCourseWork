@@ -1,5 +1,7 @@
 package course_work.algo;
 
+import java.util.Arrays;
+
 /**
  * Created by Borys Minaiev on 19.01.2015.
  */
@@ -37,7 +39,7 @@ public class Utils {
 
     public static double[][][] solveTridiagonal(double[][][] a, double[][][] b, double[][][] c, double[][][] d) {
         final int n = a.length;
-        final double[][][] res = new double[n][1][2];
+        final double[][][] res = new double[n][][];
         for (int i = 0; i + 1 < n; i++) {
             final double mul[][] = mult(getReversed(b[i]), a[i + 1]);
             subtract(b[i + 1], mult(c[i], mul));
@@ -64,15 +66,11 @@ public class Utils {
     }
 
     public static double[][] mult(double[][] a, double[][] b) {
-        final double[][] res = new double[2][2];
-//        System.out.println("AAAAA");
-//        System.out.println(Arrays.deepToString(a));
-//        System.out.println(Arrays.deepToString(b));
-//        System.out.println(Arrays.deepToString(res));
+        final double[][] res = new double[a.length][b[0].length];
         for(int i = 0; i < a.length; i++) {
             for(int j = 0; j < b.length; j++) {
                 for(int k = 0; k < b[0].length; k++) {
-                    res[i][k] = a[i][j] * b[j][k];
+                    res[i][k] += a[i][j] * b[j][k];
                 }
             }
         }
