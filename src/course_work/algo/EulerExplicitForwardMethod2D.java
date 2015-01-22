@@ -10,11 +10,6 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
     double[][] T, X, W;
     Settings settings;
 
-    double w(double x, double t) {
-        Settings s = getSettings();
-        return -s.K * Math.pow(x, s.alpha) * Math.exp(-s.E / (s.R * t));
-    }
-
     public EulerExplicitForwardMethod2D() {
     }
 
@@ -59,8 +54,8 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
         Arrays.fill(newT[0], s.Tw);
         for (int i = 1; i < X.length - 1; ++i) {
             for (int j = 1; j < X[0].length - 1; ++j) {
-                newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j, s) + w(X[i][j], T[i][j]));
-                newT[i][j] = T[i][j] + s.dt * (s.kappa * der2(T, i, j, s) - s.Q / s.C * w(X[i][j], T[i][j]));
+                newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j, s) + Utils.w(X[i][j], T[i][j], s));
+                newT[i][j] = T[i][j] + s.dt * (s.kappa * der2(T, i, j, s) - s.Q / s.C * Utils.w(X[i][j], T[i][j], s));
             }
             newX[i][0] = newX[i][1];
             newX[i][X[0].length - 1] = newX[i][X[0].length - 2];
