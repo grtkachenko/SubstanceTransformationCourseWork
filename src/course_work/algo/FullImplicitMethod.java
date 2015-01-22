@@ -45,7 +45,7 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
         final double[][][] a = new double[n][2][2];
         final double[][][] b = new double[n][2][2];
         final double[][][] c = new double[n][2][2];
-        final double[][][] d = new double[n][2][1];
+        final double[][][] d = new double[n][1][2];
         for(int i = 0; i < n; i++) {
             a[i][0][0] = c[i][0][0] = s.D / s.dz / s.dz;
             a[i][1][1] = c[i][1][1] = s.kappa / s.dz / s.dz;
@@ -56,14 +56,14 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
             b[i][1][0] = -s.Q / s.C * Utils.wWithoutOneX(X[i], T[i], s);
 //                    s.K * Math.pow(X[i], s.alpha - 1) * Math.exp(-s.E / s.R / T[i]);
             d[i][0][0] = -X[i] / s.dt;
-            d[i][1][0] = -T[i] / s.dt;
+            d[i][0][1] = -T[i] / s.dt;
         }
         b[0] = new double[][]{{1, 0}, {0, 1}};
         c[0] = new double[][]{{0, 0}, {0, 0}};
         d[0] = new double[][]{{s.xLeft, s.Tw}};
         b[b.length - 1] = new double[][]{{1, 0}, {0, 1}};
         a[a.length - 1] = new double[][]{{0, 0}, {0, 0}};
-        d[d.length - 1] = new double[][]{{s.xRight}, {s.T0}};
+        d[d.length - 1] = new double[][]{{s.xRight, s.T0}};
 
 //        System.out.println(Arrays.deepToString(a));
 //        System.out.println(Arrays.deepToString(b));
@@ -75,7 +75,7 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
         T = new double[n];
         for (int i = 0; i < n; ++i) {
             X[i] = res[i][0][0];
-            T[i] = res[i][1][0];
+            T[i] = res[i][0][1];
         }
         W = new double[n];
         for (int i = 0; i < n; i++) {

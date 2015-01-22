@@ -37,18 +37,18 @@ public class Utils {
 
     public static double[][][] solveTridiagonal(double[][][] a, double[][][] b, double[][][] c, double[][][] d) {
         final int n = a.length;
-        final double[][][] res = new double[n][2][1];
+        final double[][][] res = new double[n][1][2];
         for (int i = 0; i + 1 < n; i++) {
-            final double mul[][] = mult(a[i + 1], getReversed(b[i]));
-            subtract(b[i + 1], mult(mul, c[i]));
-            subtract(d[i + 1], mult(mul, d[i]));
+            final double mul[][] = mult(getReversed(b[i]), a[i + 1]);
+            subtract(b[i + 1], mult(c[i], mul));
+            subtract(d[i + 1], mult(d[i], mul));
         }
         for (int i = n - 1; i > 0; i--) {
-            final double mul[][] = mult(c[i - 1], getReversed(b[i]));
-            subtract(d[i - 1], mult(mul, d[i]));
+            final double mul[][] = mult(getReversed(b[i]), c[i - 1]);
+            subtract(d[i - 1], mult(d[i], mul));
         }
         for (int i = 0; i < n; i++) {
-            res[i] = mult(getReversed(b[i]), d[i]);
+            res[i] = mult(d[i], getReversed(b[i]));
         }
         return res;
     }
