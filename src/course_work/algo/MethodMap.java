@@ -18,7 +18,7 @@ public class MethodMap {
         methods1D.put(3, new EulerExplicitForwardMethod());
 
         methods2D.put(0, new EulerExplicitForwardMethod2D());
-        methods2D.put(1, new EulerExplicitForwardMethod2D());
+        methods2D.put(1, new EulerImplicitForwardMethod2D());
         methods2D.put(2, new EulerExplicitForwardMethod2D());
         methods2D.put(3, new EulerExplicitForwardMethod2D());
     }
