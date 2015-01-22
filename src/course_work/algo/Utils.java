@@ -34,4 +34,56 @@ public class Utils {
         }
         return res;
     }
+
+    public static double[][][] solveTridiagonal(double[][][] a, double[][][] b, double[][][] c, double[][][] d) {
+        final int n = a.length;
+        final double[][][] res = new double[n][2][1];
+        for (int i = 0; i + 1 < n; i++) {
+            final double mul[][] = mult(a[i + 1], getReversed(b[i]));
+            subtract(b[i + 1], mult(mul, c[i]));
+            subtract(d[i + 1], mult(mul, d[i]));
+        }
+        for (int i = n - 1; i > 0; i--) {
+            final double mul[][] = mult(c[i - 1], getReversed(b[i]));
+            subtract(d[i - 1], mult(mul, d[i]));
+        }
+        for (int i = 0; i < n; i++) {
+            res[i] = mult(getReversed(b[i]), d[i]);
+        }
+        return res;
+    }
+
+    public static double[][] getReversed(double[][] a) {
+        final double [][] res = new double[2][2];
+        final double mul = 1.0 / (a[0][0] * a[1][1] - a[1][0] * a[0][1]);
+        res[0][0] = a[1][1] * mul;
+        res[0][1] = -a[0][1] * mul;
+        res[1][0] = -a[1][0] * mul;
+        res[1][1] = a[0][0] * mul;
+        return res;
+    }
+
+    public static double[][] mult(double[][] a, double[][] b) {
+        final double[][] res = new double[2][2];
+//        System.out.println("AAAAA");
+//        System.out.println(Arrays.deepToString(a));
+//        System.out.println(Arrays.deepToString(b));
+//        System.out.println(Arrays.deepToString(res));
+        for(int i = 0; i < a.length; i++) {
+            for(int j = 0; j < b.length; j++) {
+                for(int k = 0; k < b[0].length; k++) {
+                    res[i][k] = a[i][j] * b[j][k];
+                }
+            }
+        }
+        return res;
+    }
+
+    public static void subtract(double[][] a, double[][] b) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[0].length; j++) {
+                a[i][j] -= b[i][j];
+            }
+        }
+    }
 }
