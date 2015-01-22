@@ -26,17 +26,20 @@ public class DoubleDimensionPanel extends AnimatedPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         double maxValue = 0;
+        double minValue = Double.MAX_VALUE;
         for (double[] row : currentMatrix) {
             for (double cur : row) {
                 maxValue = Math.max(maxValue, cur);
+                minValue = Math.min(minValue, cur);
             }
         }
+        double len = maxValue - minValue;
         int width = getWidth() - padding, height = getHeight() - padding;
         int matrixWidth = currentMatrix.length, matrixHeight = currentMatrix[0].length;
         int blockWidth = width / matrixWidth, blockHeight = height / matrixHeight;
         for (double[] row : currentMatrix) {
             for (int i = 0; i < row.length; i++) {
-                row[i] /= maxValue;
+                row[i] = (row[i] - minValue) / len;
                 row[i] = Math.min(1f, Math.max(0f, row[i]));
             }
         }
@@ -44,7 +47,7 @@ public class DoubleDimensionPanel extends AnimatedPanel {
 
         for (int i = 0; i < matrixWidth; i++) {
             for (int j = 0; j < matrixHeight; j++) {
-                img.setRGB(i, j, new Color(1f, 0f, 0f, (float)currentMatrix[i][j]).getRGB());
+                img.setRGB(i, j, new Color((float)currentMatrix[i][j], 0f, 1f - (float)currentMatrix[i][j], 1f).getRGB());
             }
         }
         g2.drawImage(img, 0, 0, width, height, new ImageObserver() {
