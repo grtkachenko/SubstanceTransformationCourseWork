@@ -212,7 +212,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                 } else {
                                     a[id] = c[id] = -s.kappa / s.dy / s.dy;
                                     b[id] = 1.0 / s.dt + 2 * s.kappa / s.dy / s.dy;
-                                    d[id] = newTHalf[z][y] / s.dt - s.D / s.dy / s.dy * (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]);
+                                    d[id] = newTHalf[z][y] / s.dt - s.kappa / s.dy / s.dy * (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]);
                                 }
                             }
                         }
