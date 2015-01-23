@@ -2,6 +2,7 @@ package course_work.algo;
 
 import javax.rmi.CORBA.Util;
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Created by Borys Minaiev on 1/18/2015.
@@ -34,7 +35,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
         this.settings = settings;
         T = initialT();
         X = initialX();
-        W = new double[settings.l_steps][settings.h_steps];
+        calcW();
     }
 
     @Override
@@ -130,7 +131,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                 } else {
                                     a[id] = c[id] = -kappaDivZ2;
                                     b[id] = invDt + 2 * kappaDivZ2;
-                                    d[id] = T[z][y] * invDt + (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]) * invDy2 - s.Q / s.C * Utils.w(X[z][y], T[z][y], s);
+                                    d[id] = T[z][y] * invDt + (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]) * invDy2 - s.Q / s.C * (-W[z][y]);
                                 }
                             }
                         }
@@ -148,6 +149,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                     newTHalf[z][X[0].length - 1] = newTHalf[z][X[0].length - 2];
                 }
             }
+            calcW();
         }
 
         double[][] newX = new double[X.length][X[0].length], newT = new double[T.length][T[0].length];
@@ -244,6 +246,10 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
         X = newX;
         T = newT;
 
+    }
+
+    public void calcW() {
+        Settings s = getSettings();
         W = new double[X.length][X[0].length];
         for (int i = 0; i < X.length; i++) {
             for (int j = 0; j < X[i].length; j++) {

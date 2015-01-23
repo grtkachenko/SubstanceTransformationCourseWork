@@ -213,6 +213,7 @@ public class MainGui extends JFrame {
         } else {
             MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex(), listener, stopComputingButton);
         }
+        System.gc();
     }
 
     private void addParamFields() {
