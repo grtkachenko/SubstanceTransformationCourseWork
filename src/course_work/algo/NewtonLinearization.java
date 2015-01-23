@@ -35,7 +35,51 @@ public class NewtonLinearization implements ComputationMethod<double[]> {
 
     @Override
     public void makeStep() {
-
+        final Settings s = getSettings();
+        final int n = X.length;
+        double[] lastX = X.clone();
+        double[] lastT = T.clone();
+        double[] newX, newT;
+        for (int iter = 0; iter < s.countIterations; iter++) {
+            final double[] a = new double[n];
+            final double[] b = new double[n];
+            final double[] c = new double[n];
+            final double[] d = new double[n];
+            for (int i = 0; i < n; i++) {
+                a[i] = c[i] = 0/*here*/;
+                d[i] = 0/*here*/;
+                b[i] = 0/*here*/;
+            }
+            a[n - 1] = c[0] = 0;
+            b[0] = b[n - 1] = 1;
+            d[0] = s.xLeft;
+            d[n - 1] = s.xRight;
+            lastX = Utils.solveTridiagonal(a, b, c, d);
+        }
+        newX = lastX;
+        for (int iter = 0; iter < s.countIterations; iter++) {
+            final double[] a = new double[n];
+            final double[] b = new double[n];
+            final double[] c = new double[n];
+            final double[] d = new double[n];
+            for (int i = 0; i < n; i++) {
+                a[i] = c[i] = 0/*here*/;
+                d[i] = 0/*here*/;
+                b[i] = 0/*here*/;
+            }
+            a[n - 1] = c[0] = 0;
+            b[0] = b[n - 1] = 1;
+            d[0] = s.Tw;
+            d[n - 1] = s.T0;
+            lastT = Utils.solveTridiagonal(a, b, c, d);
+        }
+        newT = lastT;
+        X = newX;
+        T = newT;
+        W = new double[n];
+        for (int i = 0; i < n; i++) {
+            W[i] = -Utils.w(X[i], T[i], settings);
+        }
     }
 
     @Override

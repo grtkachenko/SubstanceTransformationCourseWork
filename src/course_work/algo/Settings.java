@@ -11,12 +11,12 @@ public class Settings {
 
     public Settings(Settings from) {
         this(from.h_steps, from.R, from.E, from.K, from.alpha, from.Q, from.C, from.rho, from.T0, from.Tw, from.lam, from.kappa, from.D, from.xLeft,
-                from.xRight, from.dt, from.dz, from.dy, from.maxTime, from.l, from.h, from.time_steps, from.l_steps, from.countIterations, from.Tw, from.compTime);
+                from.xRight, from.dt, from.dz, from.dy, from.l, from.h, from.time_steps, from.l_steps, from.countIterations, from.Tw, from.compTime);
     }
 
     private Settings(int h_steps, double r, double e, double k, double alpha, double q, double c,
                     double rho, double t0, double tm, double lam, double kappa, double d, double xLeft,
-                    double xRight, double dt, double dz, double dy, double maxTime, double l, double h, int time_steps, int l_steps, int countIterations, double tw, int compTime) {
+                    double xRight, double dt, double dz, double dy, double l, double h, int time_steps, int l_steps, int countIterations, double tw, int compTime) {
         this.h_steps = h_steps;
         R = r;
         E = e;
@@ -32,7 +32,6 @@ public class Settings {
         D = d;
         this.xLeft = xLeft;
         this.xRight = xRight;
-        this.maxTime = maxTime;
         this.l = l;
         this.h = h;
         this.time_steps = time_steps;
@@ -45,7 +44,7 @@ public class Settings {
     }
 
     private void initParams() {
-        this.dt = maxTime / time_steps;
+        this.dt = 1.0 / time_steps;
         this.dz = l / l_steps;
         this.dy = h / h_steps;
     }
@@ -72,11 +71,10 @@ public class Settings {
     double D = kappa; // var
     double xLeft = 0.0;
     double xRight = 1.0;
-    double maxTime = 2000;
     double l = 0.05;
     double h = 0.02;
     @Modifiable
-    int time_steps = 6000;
+    int time_steps = 6;
     @Modifiable
     int l_steps = 50;
     @Modifiable
@@ -165,10 +163,6 @@ public class Settings {
 
     public void setDy(double dy) {
         this.dy = dy;
-    }
-
-    public void setMaxTime(double maxTime) {
-        this.maxTime = maxTime;
     }
 
     public void setL(double l) {
