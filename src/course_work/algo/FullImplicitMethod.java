@@ -1,5 +1,6 @@
 package course_work.algo;
 
+import javax.rmi.CORBA.Util;
 import java.util.Arrays;
 
 /**
@@ -39,19 +40,24 @@ public class FullImplicitMethod implements ComputationMethod<double[]> {
         final Settings s = getSettings();
         final int n = X.length;
 
+        double Ddivdz2 = s.D / s.dz / s.dz;
+        double invDt = 1.0 / s.dt;
+        double kappaDivDz2 = s.kappa / s.dz / s.dz;
+        double QDivC = s.Q / s.C;
+
         final double[][][] a = new double[n][2][2];
         final double[][][] b = new double[n][2][2];
         final double[][][] c = new double[n][2][2];
         final double[][][] d = new double[n][2][1];
         for (int i = 0; i < n; i++) {
-            a[i][0][0] = c[i][0][0] = s.D / s.dz / s.dz;
-            a[i][1][1] = c[i][1][1] = s.kappa / s.dz / s.dz;
-            a[i][0][1] = a[i][1][0] = c[i][0][1] = c[i][1][0] = b[i][0][1] = 0.0;
-            b[i][0][0] = -2 * s.D / s.dz / s.dz - 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s);
-            b[i][1][1] = -2 * s.kappa / s.dz / s.dz - 1 / s.dt;
-            b[i][1][0] = -s.Q / s.C * Utils.wWithoutOneX(X[i], T[i], s);
-            d[i][0][0] = -X[i] / s.dt;
-            d[i][1][0] = -T[i] / s.dt;
+            double wWithout = Utils.wWithoutOneX(X[i], T[i], s);
+            a[i][0][0] = c[i][0][0] = Ddivdz2;
+            a[i][1][1] = c[i][1][1] = kappaDivDz2;
+            b[i][0][0] = -2 * Ddivdz2 - invDt + wWithout;
+            b[i][1][1] = -2 * kappaDivDz2 - invDt;
+            b[i][1][0] = -QDivC * wWithout;
+            d[i][0][0] = -X[i] * invDt;
+            d[i][1][0] = -T[i] * invDt;
         }
         b[0] = new double[][]{{1, 0}, {0, 1}};
         c[0] = new double[][]{{0, 0}, {0, 0}};

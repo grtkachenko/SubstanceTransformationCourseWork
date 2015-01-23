@@ -36,44 +36,48 @@ public class NewtonLinearization implements ComputationMethod<double[]> {
     @Override
     public void makeStep() {
         final Settings s = getSettings();
+
+        double Ddivdz2 = s.D / s.dz / s.dz;
+        double invDt = 1.0 / s.dt;
+        double kappaDivDz2 = s.kappa / s.dz / s.dz;
+        double eDivR = s.E / s.R;
+        double QDivC = s.Q / s.C;
+
         final int n = X.length;
-        double[] lastX = X.clone();
-        double[] lastT = T.clone();
         double[] newX, newT;
-        for (int iter = 0; iter < s.countIterations; iter++) {
+        {
             final double[] a = new double[n];
             final double[] b = new double[n];
             final double[] c = new double[n];
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
-                a[i] = c[i] = s.D / s.dz / s.dz;
-                b[i] = - 2 * s.D / s.dz / s.dz - 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s) * s.alpha;
-                d[i] = X[i] * (- 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s) * (1 - s.alpha));
+                a[i] = c[i] = Ddivdz2;
+                b[i] = -2 * Ddivdz2 - invDt + Utils.wWithoutOneX(X[i], T[i], s) * s.alpha;
+                d[i] = X[i] * (-invDt + Utils.wWithoutOneX(X[i], T[i], s) * (1 - s.alpha));
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
             d[0] = s.xLeft;
             d[n - 1] = s.xRight;
-            lastX = Utils.solveTridiagonal(a, b, c, d);
+            newX = Utils.solveTridiagonal(a, b, c, d);
         }
-        newX = lastX;
-        for (int iter = 0; iter < s.countIterations; iter++) {
+
+        {
             final double[] a = new double[n];
             final double[] b = new double[n];
             final double[] c = new double[n];
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
-                a[i] = c[i] = s.kappa / s.dz / s.dz;
-                b[i] = - 2 * s.kappa / s.dz / s.dz - 1 / s.dt - s.Q / s.C * Utils.w(newX[i], T[i], s) * s.E / s.R / (T[i] * T[i]);
-                d[i] = - T[i] / s.dt + s.Q / s.C * Utils.w(newX[i], T[i], s) * (1 - s.E / s.R / T[i]);
+                a[i] = c[i] = kappaDivDz2;
+                b[i] = -2 * kappaDivDz2 - invDt - QDivC * Utils.w(newX[i], T[i], s) *  eDivR / (T[i] * T[i]);
+                d[i] = -T[i] * invDt + QDivC * Utils.w(newX[i], T[i], s) * (1 - eDivR / T[i]);
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
             d[0] = s.Tw;
             d[n - 1] = s.T0;
-            lastT = Utils.solveTridiagonal(a, b, c, d);
+            newT = Utils.solveTridiagonal(a, b, c, d);
         }
-        newT = lastT;
         X = newX;
         T = newT;
         W = new double[n];
