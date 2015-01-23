@@ -47,8 +47,8 @@ public class NewtonLinearization implements ComputationMethod<double[]> {
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
                 a[i] = c[i] = s.D / s.dz / s.dz;
-                b[i] = - 2 * s.D / s.dz / s.dz - 1 / s.dt - Utils.wWithoutOneX(X[i], T[i], s) * s.alpha;
-                d[i] = X[i] * (- 1 / s.dt - Utils.wWithoutOneX(X[i], T[i], s) * (1 - s.alpha));
+                b[i] = - 2 * s.D / s.dz / s.dz - 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s) * s.alpha;
+                d[i] = X[i] * (- 1 / s.dt + Utils.wWithoutOneX(X[i], T[i], s) * (1 - s.alpha));
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;
@@ -64,8 +64,8 @@ public class NewtonLinearization implements ComputationMethod<double[]> {
             final double[] d = new double[n];
             for (int i = 0; i < n; i++) {
                 a[i] = c[i] = s.kappa / s.dz / s.dz;
-                b[i] = - 2 * s.kappa / s.dz / s.dz - 1 / s.dt + s.Q / s.C * Utils.w(newX[i], T[i], s) * s.E / s.R / (T[i] * T[i]);
-                d[i] = - T[i] / s.dt - s.Q / s.C * Utils.w(newX[i], T[i], s) * (1 - s.E / s.R / T[i]);
+                b[i] = - 2 * s.kappa / s.dz / s.dz - 1 / s.dt - s.Q / s.C * Utils.w(newX[i], T[i], s) * s.E / s.R / (T[i] * T[i]);
+                d[i] = - T[i] / s.dt + s.Q / s.C * Utils.w(newX[i], T[i], s) * (1 - s.E / s.R / T[i]);
             }
             a[n - 1] = c[0] = 0;
             b[0] = b[n - 1] = 1;

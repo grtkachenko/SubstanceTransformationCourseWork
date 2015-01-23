@@ -13,9 +13,9 @@ public class MethodMap {
 
     static {
         methods1D.put(0, new EulerExplicitForwardMethod());
-        methods1D.put(1, new FullImplicitMethod());
-        methods1D.put(2, new EulerExplicitForwardMethod());
-        methods1D.put(3, new EulerImplicitForwardMethod());
+        methods1D.put(1, new EulerImplicitForwardMethod());
+        methods1D.put(2, new NewtonLinearization());
+        methods1D.put(3, new FullImplicitMethod());
 
         methods2D.put(0, new EulerExplicitForwardMethod2D());
         methods2D.put(1, new EulerImplicitForwardMethod2D());
