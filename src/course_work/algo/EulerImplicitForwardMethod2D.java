@@ -81,7 +81,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                 } else {
                                     a[id] = c[id] = -s.D / s.dz / s.dz;
                                     b[id] = 1.0 / s.dt + 2 * s.D / s.dz / s.dz - Utils.wWithoutOneX(X[z][y], T[z][y], s);
-                                    d[id] = (X[z][y - 1] - 2 * X[z][y] + X[z][y + 1]) / s.dy / s.dy;
+                                    d[id] = (X[z][y - 1] - 2 * X[z][y] + X[z][y + 1]) / s.dy / s.dy + X[z][y] / s.dt;
                                 }
                             }
                         }
@@ -91,12 +91,12 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                 for (int z = 0; z < X.length; z++) {
                     for (int y = 0; y < X[0].length; y++) {
                         int id = getIdCalcZ(z, y, X);
-                        newX[z][y] = X[z][y] + result[id];
+                        newX[z][y] = result[id];
                     }
                 }
                 for (int z = 0; z < X.length; z++) {
                     newX[z][0] = newX[z][1];
-                    newX[z][X[0].length - 2] = newX[z][X[0].length - 1];
+                    newX[z][X[0].length - 1] = newX[z][X[0].length - 2];
                 }
             }
             {
@@ -138,7 +138,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                 }
                 for (int z = 0; z < X.length; z++) {
                     newT[z][0] = newT[z][1];
-                    newT[z][X[0].length - 2] = newT[z][X[0].length - 1];
+                    newT[z][X[0].length - 1] = newT[z][X[0].length - 2];
                 }
             }
         }
