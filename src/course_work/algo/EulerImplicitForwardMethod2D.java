@@ -144,7 +144,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
         }
 
         double[][] newX = new double[X.length][X[0].length], newT = new double[T.length][T[0].length];
-        /*{
+        {
             // implicit by y, explicit by z
             {
                 // calculate new X
@@ -230,9 +230,7 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                     newT[z][X[0].length - 1] = newT[z][X[0].length - 2];
                 }
             }
-        }*/
-        newX = newXHalf;
-        newT = newTHalf;
+        }
 
         X = newX;
         T = newT;

@@ -65,6 +65,7 @@ public class CachedComputationMethod<T> {
                 public void run() {
                     int idx = (int) (maxTime / computationMethod.getSettings().dt);
                     int curProgress = 0;
+                    long before = System.currentTimeMillis();
                     while (Ts.size() <= idx && isComputing) {
                         Ts.add(computationMethod.temperatures());
                         Xs.add(computationMethod.concentration());
@@ -84,7 +85,7 @@ public class CachedComputationMethod<T> {
                             }
                         }
                     });
-
+                    System.out.println(System.currentTimeMillis() - before);
                     state = ComputationState.FINISHED;
 
                 }
