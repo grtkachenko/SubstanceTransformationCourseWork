@@ -54,6 +54,13 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
     public void makeStep() {
         final Settings s = getSettings();
         double[][] newXHalf = new double[X.length][X[0].length], newTHalf = new double[T.length][T[0].length];
+        double invDt = 1.0 / s.dt;
+        double invDz2 = 1.0 / s.dz / s.dz;
+        double invDy2 = 1.0 / s.dy / s.dy;
+        double dDivZ2 = s.D * invDz2;
+        double kappaDivZ2 = s.kappa * invDz2;
+        double dDivY2 = s.D * invDy2;
+        double kappaDivY2 = s.kappa * invDy2;
 
         {
             // implicit by z, explicit by y
@@ -79,9 +86,9 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                     b[id] = 1;
                                     d[id] = X[z][y];
                                 } else {
-                                    a[id] = c[id] = -s.D / s.dz / s.dz;
-                                    b[id] = 1.0 / s.dt + 2 * s.D / s.dz / s.dz - Utils.wWithoutOneX(X[z][y], T[z][y], s);
-                                    d[id] = (X[z][y - 1] - 2 * X[z][y] + X[z][y + 1]) / s.dy / s.dy + X[z][y] / s.dt;
+                                    a[id] = c[id] = -dDivZ2;
+                                    b[id] = invDt + 2 * dDivZ2 - Utils.wWithoutOneX(X[z][y], T[z][y], s);
+                                    d[id] = (X[z][y - 1] - 2 * X[z][y] + X[z][y + 1]) * invDy2 + X[z][y] * invDt;
                                 }
                             }
                         }
@@ -121,9 +128,9 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                     b[id] = 1;
                                     d[id] = T[z][y];
                                 } else {
-                                    a[id] = c[id] = -s.kappa / s.dy / s.dy;
-                                    b[id] = 1.0 / s.dt + 2 * s.kappa / s.dy / s.dy;
-                                    d[id] = T[z][y] / s.dt + (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]) / s.dy / s.dy - s.Q / s.C * Utils.w(X[z][y], T[z][y], s);
+                                    a[id] = c[id] = -kappaDivZ2;
+                                    b[id] = invDt + 2 * kappaDivZ2;
+                                    d[id] = T[z][y] * invDt + (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]) * invDy2 - s.Q / s.C * Utils.w(X[z][y], T[z][y], s);
                                 }
                             }
                         }
@@ -168,9 +175,9 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                     b[id] = 1;
                                     d[id] = newXHalf[z][y];
                                 } else {
-                                    a[id] = c[id] = -s.D / s.dy / s.dy;
-                                    b[id] = 1.0 / s.dt + 2 * s.D / s.dy / s.dy;
-                                    d[id] = newXHalf[z][y] / s.dt - s.D / s.dy / s.dy * (X[z][y - 1] - 2 * X[z][y] + X[z][y + 1]);
+                                    a[id] = c[id] = -dDivY2;
+                                    b[id] = invDt + 2 * dDivY2;
+                                    d[id] = newXHalf[z][y] * invDt - dDivY2 * (X[z][y - 1] - 2 * X[z][y] + X[z][y + 1]);
                                 }
                             }
                         }
@@ -210,9 +217,9 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                                     b[id] = 1;
                                     d[id] = newTHalf[z][y];
                                 } else {
-                                    a[id] = c[id] = -s.kappa / s.dy / s.dy;
-                                    b[id] = 1.0 / s.dt + 2 * s.kappa / s.dy / s.dy;
-                                    d[id] = newTHalf[z][y] / s.dt - s.kappa / s.dy / s.dy * (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]);
+                                    a[id] = c[id] = -kappaDivY2;
+                                    b[id] = invDt + 2 * kappaDivY2;
+                                    d[id] = newTHalf[z][y] * invDt - kappaDivY2 * (T[z][y - 1] - 2 * T[z][y] + T[z][y + 1]);
                                 }
                             }
                         }
@@ -231,6 +238,8 @@ public class EulerImplicitForwardMethod2D implements ComputationMethod<double[][
                 }
             }
         }
+        newX = newXHalf;
+        newT = newTHalf;
 
         X = newX;
         T = newT;
