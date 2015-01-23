@@ -47,8 +47,8 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
         return settings;
     }
 
-    private double der2(double[][] a, int i, int j) {
-        return (a[i - 1][j] - 2 * a[i][j] + a[i + 1][j]) + (a[i][j - 1] - 2 * a[i][j] + a[i][j + 1]);
+    private double der2(double[][] a, int i, int j, Settings s) {
+        return (a[i - 1][j] - 2 * a[i][j] + a[i + 1][j]) / s.dz / s.dz + (a[i][j - 1] - 2 * a[i][j] + a[i][j + 1]) / s.dy / s.dy;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
         Arrays.fill(newT[0], s.Tw);
         for (int i = 1; i < X.length - 1; ++i) {
             for (int j = 1; j < X[0].length - 1; ++j) {
-                newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j) / s.dz / s.dz + w(X[i][j], T[i][j]));
-                newT[i][j] = T[i][j] + s.dt * (s.kappa * der2(T, i, j) / s.dz / s.dz - s.Q / s.C * w(X[i][j], T[i][j]));
+                newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j, s) + w(X[i][j], T[i][j]));
+                newT[i][j] = T[i][j] + s.dt * (s.kappa * der2(T, i, j, s) - s.Q / s.C * w(X[i][j], T[i][j]));
             }
             newX[i][0] = newX[i][1];
             newX[i][X[0].length - 1] = newX[i][X[0].length - 2];
