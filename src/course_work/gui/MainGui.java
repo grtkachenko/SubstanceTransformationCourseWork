@@ -120,26 +120,26 @@ public class MainGui extends JFrame {
 
             @Override
             public void onComputationStarted() {
-                    isStartButtonEnabled = startButton.isEnabled();
-                    startButton.setEnabled(false);
-                    stopButton.setEnabled(false);
-                    progressBar.setValue(0);
-                    progressBar.setVisible(true);
-                    stopComputingButton.setEnabled(true);
-                    algoSelector.setEnabled(false);
-                    dimensionSelector.setEnabled(false);
-                    System.out.println("onComputationStarted");
+                isStartButtonEnabled = startButton.isEnabled();
+                startButton.setEnabled(false);
+                stopButton.setEnabled(false);
+                progressBar.setValue(0);
+                progressBar.setVisible(true);
+                stopComputingButton.setEnabled(true);
+                algoSelector.setEnabled(false);
+                dimensionSelector.setEnabled(false);
+                System.out.println("onComputationStarted");
             }
 
             @Override
             public void onComputationFinished() {
-                    progressBar.setVisible(false);
-                    setStartButtonEnabled(isStartButtonEnabled);
-                    refreshGraphsPanel(is1DimensionalState);
-                    stopComputingButton.setEnabled(false);
-                    algoSelector.setEnabled(true);
-                    dimensionSelector.setEnabled(true);
-                    System.out.println("onComputationFinished");
+                progressBar.setVisible(false);
+                setStartButtonEnabled(isStartButtonEnabled);
+                refreshGraphsPanel(is1DimensionalState);
+                stopComputingButton.setEnabled(false);
+                algoSelector.setEnabled(true);
+                dimensionSelector.setEnabled(true);
+                System.out.println("onComputationFinished");
             }
         });
     }
@@ -209,8 +209,12 @@ public class MainGui extends JFrame {
     private void updateSources(CachedComputationMethod.ComputationProgressListener listener) {
         needToUpdateSources = false;
         if (is1DimensionalState) {
+            MainGui.this.singleDimensionDataSources = null;
+            System.gc();
             MainGui.this.singleDimensionDataSources = Main.getSingleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex(), listener, stopComputingButton);
         } else {
+            MainGui.this.doubleDimensionDataSources = null;
+            System.gc();
             MainGui.this.doubleDimensionDataSources = Main.getDoubleDimensionDataSources(new Settings(settings), algoSelector.getSelectedIndex(), listener, stopComputingButton);
         }
         System.gc();
@@ -396,9 +400,9 @@ public class MainGui extends JFrame {
         algoSelector = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
         defaultComboBoxModel2.addElement("Явная схема");
-        defaultComboBoxModel2.addElement("Неявный метод Эйлера");
-        defaultComboBoxModel2.addElement("Частично неявная схема + диагональ");
         defaultComboBoxModel2.addElement("Частично неявная схема с итерациями");
+        defaultComboBoxModel2.addElement("Линеаризация по Ньютону");
+        defaultComboBoxModel2.addElement("Полностью неявная схема");
         algoSelector.setModel(defaultComboBoxModel2);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;

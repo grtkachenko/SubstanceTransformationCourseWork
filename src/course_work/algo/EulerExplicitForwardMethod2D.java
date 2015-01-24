@@ -56,17 +56,21 @@ public class EulerExplicitForwardMethod2D implements ComputationMethod<double[][
 
         double[][] newX = new double[X.length][X[0].length], newT = new double[T.length][T[0].length];
         Arrays.fill(newX[0], s.xLeft);
-        Arrays.fill(newT[0], s.Tw);
+        Arrays.fill(newT[0], s.T0);
+        for (int i = newX[0].length / 4; i <= 3 * newX[0].length / 4; ++i) {
+            newT[0][i] = s.Tw;
+            newX[0][i] = s.xLeft;
+        }
         final double qDivC = s.Q / s.C;
         for (int i = 1; i < X.length - 1; ++i) {
             for (int j = 1; j < X[0].length - 1; ++j) {
                 newX[i][j] = X[i][j] + s.dt * (s.D * der2(X, i, j, s) - W[i][j]);
                 newT[i][j] = T[i][j] + s.dt * (s.kappa * der2(T, i, j, s) + qDivC * W[i][j]);
             }
-            newX[i][0] = newX[i][1];
-            newX[i][X[0].length - 1] = newX[i][X[0].length - 2];
-            newT[i][0] = newT[i][1];
-            newT[i][T[0].length - 1] = newT[i][T[0].length - 2];
+            newX[i][0] = s.xRight;//newX[i][1];
+            newX[i][X[0].length - 1] = s.xRight;//newX[i][X[0].length - 2];
+            newT[i][0] = s.T0;//newT[i][1];
+            newT[i][T[0].length - 1] = s.T0;//newT[i][T[0].length - 2];
         }
         Arrays.fill(newX[X.length - 1], s.xRight);
         Arrays.fill(newT[T.length - 1], s.T0);

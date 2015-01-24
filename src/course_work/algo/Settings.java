@@ -64,13 +64,14 @@ public class Settings {
     double T0 = 293.0;
     double Tm = T0 + Q / C;
     @Modifiable
-    double Tw = 610;
+    double Tw = 650;
     double lam = 0.13;
     double kappa = lam / (rho * C);
     @Modifiable
     double D = kappa; // var
     double xLeft = 0.0;
     double xRight = 1.0;
+    @Modifiable
     double l = 0.05;
     double h = 0.02;
     @Modifiable
@@ -80,7 +81,7 @@ public class Settings {
     @Modifiable
     int h_steps = 20;
     @Modifiable
-    int compTime = 20;
+    int compTime = 5;
     @Modifiable
     int countIterations = 5;
 
@@ -119,6 +120,14 @@ public class Settings {
 
     public void setC(double c) {
         C = c;
+    }
+
+    public void setCountIterations(int countIterations) {
+        this.countIterations = countIterations;
+    }
+
+    public void setTm(double tm) {
+        Tm = tm;
     }
 
     public void setRho(double rho) {
